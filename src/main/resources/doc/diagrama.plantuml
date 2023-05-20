@@ -1,0 +1,149 @@
+@startuml
+
+    class Usuario {
+        - nome: String
+        - email: String
+        - senha: String
+        - cpf: String
+    }
+
+    class Telefone {
+        - codigoArea: String
+        - numero: String
+    }
+
+    class Compra {
+        - dataPagamento: Date
+        - totalCompra: Double
+    }
+
+    enum StatusCompra{
+        PROCESSANDO: int
+        PAGA: int
+        CANCELADA: int
+        FINALIZADA: int
+    }
+
+    class HistoricoEntrega{
+      - titulo: String
+      - descricao: String
+      - data: Date
+    }
+
+    class ItemCompra {
+        - quantidade: Integer
+        - preco: Double
+    }
+
+    class Endereco {
+        - principal: Boolean
+        - logradouro: String
+        - bairro: String
+        - numero: String
+        - complemento: String
+        - cep: String
+        - titulo: String
+    }
+
+    class EnderecoCompra {
+        - logradouro: String
+        - bairro: String
+        - numero: String
+        - complemento: String
+        - cep: String
+        - municipio: String
+        - estado: String
+    }
+
+    class Municipio {
+      - descricao: String
+    }
+
+    class Estado {
+      - sigla: String
+      - descricao: String
+    }
+
+    abstract class MetodoDePagamento{
+    }
+
+    class Pix extends MetodoDePagamento{
+      - chave: String
+    }
+
+    enum TipoChavePix{
+
+      - ALEATORIA: int
+      - CPF_CNPJ: int
+      - EMAIL: int
+      - CELULAR: int
+
+    }
+
+    class Boleto extends MetodoDePagamento{
+      - numeroBoleto: String
+      - dataDeVencimento : Date
+    }
+
+    class CartaoDeCredito extends MetodoDePagamento{
+      - quantidadeParcelas: Integer
+      - valorParcela: Double
+    }
+
+    class DefaultEntity {
+        - id: Long
+        - dataInclusao: Date
+        - dataAlteracao: Date
+    }
+
+     class Cartao {
+        - numeroCartao : String
+        - hash: String
+        - nomeTitular: String
+    }
+
+    class Artesao {
+      - nome: String
+      - descricao
+    }
+
+    class Produto{
+        - nome: String
+        - descricao: String
+        - preco: Double
+        - estoque: Integer
+    }
+
+    class ArtigoCeramica extends Produto{
+         - quantidadePecas: Integer
+    }
+
+    class TipoProduto {
+      - descricao
+    }
+
+    Usuario "*" o--> "*" Produto: listaDesejo
+    Telefone "1" *-right-> "1" Usuario: celular
+    Telefone "1" *-right-> "1" Usuario: whatszap
+    Usuario "1" o-down->  "*" Cartao
+
+    Endereco "*" <--* "1" Usuario
+    Compra "1" *--> "1" EnderecoCompra
+    Endereco "*" o--> "1" Municipio
+    Municipio "*" o-right-> "1" Estado
+    EnderecoCompra "*" o--> "1" Municipio
+
+    Compra "*" o---> "1" Usuario
+    Compra "*" -up-> "1" StatusCompra
+    Compra "*" *--left-> "1" MetodoDePagamento
+    Compra "1" <-right- "*" HistoricoEntrega
+    Compra "1" *--> "*" ItemCompra
+
+    ItemCompra "*" o--> "1" Produto
+    Cartao "1" <-- "*" CartaoDeCredito
+    Pix "*" --> "1" TipoChavePix
+    Artesao "1" <-left-o "*" ArtigoCeramica
+
+    ArtigoCeramica "*" --> "*" TipoProduto
+
+@enduml
