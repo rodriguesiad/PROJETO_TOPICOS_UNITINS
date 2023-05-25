@@ -25,9 +25,9 @@ public record UsuarioResponseDTO(
 
         String cpf,
 
-        String senha,
-
         String login,
+
+        String nomeImagem,
 
         TelefoneResponseDTO telefone,
 
@@ -47,10 +47,10 @@ public record UsuarioResponseDTO(
                     null,
                     null,
                     null,
-                    entity.getSenha(),
                     entity.getLogin(),
+                    entity.getNomeImagem(),
                     gerarTelefoneDTO(entity.getTelefone()),
-                    gerarTelefoneDTO(entity.getWhastapp()),
+                    gerarTelefoneDTO(entity.getWhatsapp()),
                     gerarEnderecoDTO(entity.getListaEndereco()),
                     gerarCartaoDTO(entity.getCartoes()),
                     gerarListaDesejoDTO(entity.getListaDesejo()));
@@ -59,10 +59,10 @@ public record UsuarioResponseDTO(
                 entity.getPessoaFisica().getCpf(),
                 entity.getPessoaFisica().getNome(),
                 entity.getPessoaFisica().getEmail(),
-                entity.getSenha(),
                 entity.getLogin(),
+                entity.getNomeImagem(),
                 gerarTelefoneDTO(entity.getTelefone()),
-                gerarTelefoneDTO(entity.getWhastapp()),
+                gerarTelefoneDTO(entity.getWhatsapp()),
                 gerarEnderecoDTO(entity.getListaEndereco()),
                 gerarCartaoDTO(entity.getCartoes()),
                 gerarListaDesejoDTO(entity.getListaDesejo()));

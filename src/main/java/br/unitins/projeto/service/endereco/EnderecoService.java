@@ -16,6 +16,8 @@ public interface EnderecoService {
 
     EnderecoResponseDTO create(EnderecoDTO productDTO);
 
+    EnderecoResponseDTO create(Endereco product);
+
     EnderecoResponseDTO update(Long id, EnderecoDTO productDTO);
 
     Endereco toModel(@Valid EnderecoDTO enderecoDTO);

@@ -8,6 +8,6 @@ import io.smallrye.common.constraint.NotNull;
 
 public record DadosPessoaisDTO(
 
-        @NotNull @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy") LocalDate dataNascimento) {
+                @NotNull @JsonFormat(pattern = "yyyy-MM-dd") LocalDate dataNascimento) {
 
 }

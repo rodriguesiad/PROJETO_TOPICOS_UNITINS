@@ -24,24 +24,26 @@ public class Usuario extends DefaultEntity {
     @Column(nullable = false)
     private String senha;
 
+    private String nomeImagem;
+
     @ElementCollection
     @CollectionTable(name = "perfis", joinColumns = @JoinColumn(name = "id_usuario", referencedColumnName = "id"))
     @Column(name = "perfil", length = 30)
     private Set<Perfil> perfis;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_telefone_celular", unique = true)
     private Telefone telefone;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "id_telefone_whatsapp", unique = true)
-    private Telefone whastapp;
+    private Telefone whatsapp;
 
     @OneToMany(mappedBy = "usuario")
     private List<Endereco> listaEndereco;
 
-    @OneToOne
-    @JoinColumn(name = "id_pessoa_fisica", unique = true, nullable = false)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_pessoa_fisica", unique = true)
     private PessoaFisica pessoaFisica;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -83,12 +85,12 @@ public class Usuario extends DefaultEntity {
         this.telefone = telefone;
     }
 
-    public Telefone getWhastapp() {
-        return whastapp;
+    public Telefone getWhatsapp() {
+        return whatsapp;
     }
 
-    public void setWhastapp(Telefone whastapp) {
-        this.whastapp = whastapp;
+    public void setWhatsapp(Telefone whatsapp) {
+        this.whatsapp = whatsapp;
     }
 
     public List<Endereco> getListaEndereco() {
@@ -123,4 +125,11 @@ public class Usuario extends DefaultEntity {
         this.listaDesejo = listaDesejo;
     }
 
+    public String getNomeImagem() {
+        return nomeImagem;
+    }
+
+    public void setNomeImagem(String nomeImagem) {
+        this.nomeImagem = nomeImagem;
+    }
 }

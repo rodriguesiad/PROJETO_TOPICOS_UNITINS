@@ -2,6 +2,8 @@ package br.unitins.projeto.model;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
@@ -16,7 +18,8 @@ public class PessoaFisica extends Pessoa {
     @Column(nullable = false, length = 11)
     private String cpf;
 
-    @Column(name = "data_nascimento")
+    @Column(name = "data_nascimento", columnDefinition = "TIMESTAMP")
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDate dataNascimento;
 
     public LocalDate getDataNascimento() {

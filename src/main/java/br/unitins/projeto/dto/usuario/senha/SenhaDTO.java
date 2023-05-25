@@ -4,9 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 
 public record SenhaDTO(
 
-        @NotBlank String senhaAtual,
+                @NotBlank String senhaAtual,
 
-        @NotBlank String novaSenha
+                @NotBlank(message = "A nova senha não pode ser vazia") String novaSenha
 
 ) {
 

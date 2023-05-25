@@ -12,7 +12,7 @@ public record UsuarioTelefoneResponseDTO(
 
     public static UsuarioTelefoneResponseDTO valueOf(Usuario entity) {
         return new UsuarioTelefoneResponseDTO(gerarTelefoneDTO(entity.getTelefone()),
-                gerarTelefoneDTO(entity.getWhastapp()));
+                gerarTelefoneDTO(entity.getWhatsapp()));
     }
 
     public static TelefoneResponseDTO gerarTelefoneDTO(Telefone telefone) {

@@ -28,7 +28,6 @@
     </dependencies>
   </dependencyManagement>
   <dependencies>
-
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-openapi</artifactId>
@@ -42,6 +41,11 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-resteasy</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-resteasy-multipart</artifactId>
     </dependency>
 
     <dependency>
@@ -89,8 +93,7 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-smallrye-jwt-build</artifactId>
-    </dependency>  
-    
+    </dependency>
   </dependencies>
   <build>
     <plugins>

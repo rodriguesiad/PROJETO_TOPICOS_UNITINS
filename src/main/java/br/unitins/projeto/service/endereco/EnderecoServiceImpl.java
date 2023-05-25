@@ -70,6 +70,13 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Override
     @Transactional
+    public EnderecoResponseDTO create(Endereco endereco) throws ConstraintViolationException {
+        repository.persist(endereco);
+        return new EnderecoResponseDTO(endereco);
+    }
+
+    @Override
+    @Transactional
     public EnderecoResponseDTO update(Long id, EnderecoDTO enderecoDTO) throws ConstraintViolationException {
         validar(enderecoDTO);
 
@@ -91,6 +98,7 @@ public class EnderecoServiceImpl implements EnderecoService {
     public Endereco toModel(@Valid EnderecoDTO enderecoDTO) {
         Endereco entity = new Endereco();
 
+        entity.setId(enderecoDTO.id());
         entity.setPrincipal(enderecoDTO.principal());
         entity.setLogradouro(enderecoDTO.logradouro());
         entity.setBairro(enderecoDTO.bairro());

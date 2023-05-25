@@ -3,15 +3,12 @@ package br.unitins.projeto.resource;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import br.unitins.projeto.dto.auth_usuario.AuthUsuarioDTO;
-import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.token_jwt.TokenJwtService;
 import br.unitins.projeto.service.usuario.UsuarioService;
-import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
@@ -50,19 +47,6 @@ public class AuthResource {
         return Response.ok()
                 .header("Authorization", tokenService.generateJwt(usuario))
                 .build();
-
-    }
-
-    @GET
-    @Path("/usuario")
-    @RolesAllowed({ "User" })
-    public Response getPerfilUsuario() {
-
-        // obtendo o login a partir do token
-        String login = jwt.getSubject();
-        UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
-
-        return Response.ok(usuario).build();
     }
 
 }
