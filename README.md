@@ -1,8 +1,14 @@
-# helloquarkustopicos1
+# Projeto Tópicos
 
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 If you want to learn more about Quarkus, please visit its website: https://quarkus.io/ .
+
+For system authentication use :
+
+login = maria
+
+senha = 123
 
 ## Running the application in dev mode
 
