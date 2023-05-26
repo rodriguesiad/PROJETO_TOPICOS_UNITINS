@@ -1,18 +1,26 @@
 package br.unitins.projeto.resource;
 
-import java.util.List;
-
-import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.tipo_produto.TipoProdutoDTO;
 import br.unitins.projeto.dto.tipo_produto.TipoProdutoResponseDTO;
 import br.unitins.projeto.service.tipo_produto.TipoProdutoService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+
+import java.util.List;
 
 @Path("/tipos-produtos")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -34,7 +42,8 @@ public class TipoProdutoResource {
     }
 
     @POST
-    public Response insert(TipoProdutoDTO dto) {
+    @RolesAllowed({"Admin"})
+    public Response insert(@Valid TipoProdutoDTO dto) {
         try {
             TipoProdutoResponseDTO TipoProduto = service.create(dto);
             return Response.status(Status.CREATED).entity(TipoProduto).build();
@@ -46,7 +55,8 @@ public class TipoProdutoResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, TipoProdutoDTO dto) {
+    @RolesAllowed({"Admin"})
+    public Response update(@PathParam("id") Long id, @Valid TipoProdutoDTO dto) {
         try {
             TipoProdutoResponseDTO TipoProduto = service.update(id, dto);
             return Response.ok(TipoProduto).build();
@@ -58,6 +68,7 @@ public class TipoProdutoResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.status(Status.NO_CONTENT).build();

@@ -1,24 +1,32 @@
 package br.unitins.projeto.resource;
 
-import java.util.List;
-
-import jakarta.inject.Inject;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
-
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.artesao.ArtesaoDTO;
 import br.unitins.projeto.dto.artesao.ArtesaoResponseDTO;
 import br.unitins.projeto.service.artesao.ArtesaoService;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.Status;
+
+import java.util.List;
 
 @Path("/artesoes")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class ArtesaoResource {
-    
+
     @Inject
     ArtesaoService service;
 
@@ -34,11 +42,12 @@ public class ArtesaoResource {
     }
 
     @POST
-    public Response insert(ArtesaoDTO dto) {
+    @RolesAllowed({"Admin"})
+    public Response insert(@Valid ArtesaoDTO dto) {
         try {
             ArtesaoResponseDTO Artesao = service.create(dto);
             return Response.status(Status.CREATED).entity(Artesao).build();
-        } catch(ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             Result result = new Result(e.getConstraintViolations());
             return Response.status(Status.NOT_FOUND).entity(result).build();
         }
@@ -46,18 +55,20 @@ public class ArtesaoResource {
 
     @PUT
     @Path("/{id}")
-    public Response update(@PathParam("id") Long id, ArtesaoDTO dto) {
+    @RolesAllowed({"Admin"})
+    public Response update(@PathParam("id") Long id, @Valid ArtesaoDTO dto) {
         try {
             ArtesaoResponseDTO Artesao = service.update(id, dto);
             return Response.ok(Artesao).build();
-        } catch(ConstraintViolationException e) {
+        } catch (ConstraintViolationException e) {
             Result result = new Result(e.getConstraintViolations());
             return Response.status(Status.NOT_FOUND).entity(result).build();
-        }      
+        }
     }
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
         service.delete(id);
         return Response.status(Status.NO_CONTENT).build();
@@ -65,13 +76,14 @@ public class ArtesaoResource {
 
     @GET
     @Path("/count")
-    public Long count(){
+    @RolesAllowed({"Admin"})
+    public Long count() {
         return service.count();
     }
 
     @GET
     @Path("/search/{nome}")
-    public List<ArtesaoResponseDTO> search(@PathParam("nome") String nome){
+    public List<ArtesaoResponseDTO> search(@PathParam("nome") String nome) {
         return service.findByNome(nome);
     }
 

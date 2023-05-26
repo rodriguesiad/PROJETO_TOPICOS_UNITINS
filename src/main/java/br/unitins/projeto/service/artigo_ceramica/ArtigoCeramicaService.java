@@ -1,9 +1,11 @@
 package br.unitins.projeto.service.artigo_ceramica;
 
-import java.util.List;
-
 import br.unitins.projeto.dto.artigo_ceramica.ArtigoCeramicaDTO;
 import br.unitins.projeto.dto.artigo_ceramica.ArtigoCeramicaResponseDTO;
+import br.unitins.projeto.form.ImageForm;
+
+import java.io.IOException;
+import java.util.List;
 
 public interface ArtigoCeramicaService {
 
@@ -20,5 +22,7 @@ public interface ArtigoCeramicaService {
     List<ArtigoCeramicaResponseDTO> findByNome(String nome);
 
     Long count();
+
+    ArtigoCeramicaResponseDTO insertImagens(ImageForm form, Long id) throws IOException;
 
 }

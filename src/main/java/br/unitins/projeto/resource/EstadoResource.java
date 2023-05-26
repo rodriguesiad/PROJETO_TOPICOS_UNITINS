@@ -4,13 +4,21 @@ import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.estado.EstadoDTO;
 import br.unitins.projeto.dto.estado.EstadoResponseDTO;
 import br.unitins.projeto.service.estado.EstadoService;
-
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.ws.rs.*;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+
 import java.util.List;
 
 @Path("/estados")
@@ -33,6 +41,7 @@ public class EstadoResource {
     }
 
     @POST
+    @RolesAllowed({"Admin"})
     public Response insert(EstadoDTO dto) {
         try {
             EstadoResponseDTO Estado = service.create(dto);
@@ -45,6 +54,7 @@ public class EstadoResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed({"Admin"})
     public Response update(@PathParam("id") Long id, EstadoDTO dto) {
         try {
             EstadoResponseDTO Estado = service.update(id, dto);
@@ -57,6 +67,7 @@ public class EstadoResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
         try {
             service.delete(id);
@@ -65,7 +76,6 @@ public class EstadoResource {
             Result result = new Result(e.getConstraintViolations());
             return Response.status(Status.NOT_FOUND).entity(result).build();
         }
-
     }
 
     @GET

@@ -4,6 +4,9 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Inheritance;
 import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToMany;
+
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -20,6 +23,9 @@ public class Produto extends DefaultEntity {
 
     @Column(nullable = false)
     private Integer estoque;
+
+    @OneToMany(mappedBy = "produto")
+    private List<ProdutoImagem> imagens;
 
     public String getNome() {
         return nome;
@@ -51,6 +57,14 @@ public class Produto extends DefaultEntity {
 
     public void setEstoque(Integer estoque) {
         this.estoque = estoque;
+    }
+
+    public List<ProdutoImagem> getImagens() {
+        return imagens;
+    }
+
+    public void setImagens(List<ProdutoImagem> imagens) {
+        this.imagens = imagens;
     }
 
 }
