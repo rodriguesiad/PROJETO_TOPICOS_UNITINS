@@ -12,11 +12,6 @@ INSERT INTO  municipio (datainclusao, descricao, id_estado) VALUES('2023-04-15',
 INSERT INTO  municipio (datainclusao, descricao, id_estado) VALUES('2023-04-15', 'Porto Nacional', 1);
 INSERT INTO  municipio (datainclusao, descricao, id_estado) VALUES('2023-04-15', 'Gurupi', 1);
 
-INSERT INTO public.tipoproduto(datainclusao, descricao) VALUES ('2023-04-15', 'Barro queimado');
-INSERT INTO public.tipoproduto(datainclusao, descricao) VALUES ('2023-04-15', 'Copo');
-
-INSERT INTO public.artesao(datainclusao, descricao, nome) VALUES ('2023-04-15', 'Intagram: @artesanatoNato', 'Nato Artesão');
-
 INSERT INTO pessoa(nome) VALUES ('Maria');
 INSERT INTO telefone(codigoArea, numero) VALUES ('63', '123456789');
 INSERT INTO telefone(codigoArea, numero) VALUES ('63', '123456789');
@@ -25,3 +20,10 @@ INSERT INTO usuario(login, senha, id_telefone_celular, id_telefone_whatsapp, id_
 
 INSERT INTO  perfis (id_usuario, perfil) VALUES (1, 'Admin');
 INSERT INTO  perfis (id_usuario, perfil) VALUES (1, 'User');
+
+INSERT INTO public.tipoproduto(datainclusao, descricao) VALUES ('2023-04-15', 'Barro queimado');
+INSERT INTO public.tipoproduto(datainclusao, descricao) VALUES ('2023-04-15', 'Copo');
+INSERT INTO public.artesao(datainclusao, descricao, nome) VALUES ('2023-04-15', 'Intagram: @artesanatoNato', 'Nato Artesão');
+INSERT INTO public.produto(estoque, preco, dataalteracao, datainclusao, id, nome, descricao) VALUES (1, 10, null, '2023-05-26', 1, 'Panela', 'Panela de barro');
+INSERT INTO public.artigoceramica(quantidadepecas, id, id_artesao) VALUES (1, 1, 1);
+INSERT INTO public.artigo_tipo(id_artigo, id_tipo) VALUES (1, 1);
