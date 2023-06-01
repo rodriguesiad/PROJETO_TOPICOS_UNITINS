@@ -52,7 +52,7 @@ public record UsuarioResponseDTO(
                     gerarTelefoneDTO(entity.getTelefone()),
                     gerarTelefoneDTO(entity.getWhatsapp()),
                     gerarEnderecoDTO(entity.getListaEndereco()),
-                    gerarCartaoDTO(entity.getCartoes()),
+                    gerarCartaoDTO(entity.getListaCartao()),
                     gerarListaDesejoDTO(entity.getListaDesejo()));
 
         return new UsuarioResponseDTO(entity.getId(),
@@ -64,7 +64,7 @@ public record UsuarioResponseDTO(
                 gerarTelefoneDTO(entity.getTelefone()),
                 gerarTelefoneDTO(entity.getWhatsapp()),
                 gerarEnderecoDTO(entity.getListaEndereco()),
-                gerarCartaoDTO(entity.getCartoes()),
+                gerarCartaoDTO(entity.getListaCartao()),
                 gerarListaDesejoDTO(entity.getListaDesejo()));
     }
 

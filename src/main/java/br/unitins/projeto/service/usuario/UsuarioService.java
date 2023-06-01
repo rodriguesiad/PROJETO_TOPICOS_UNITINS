@@ -2,10 +2,13 @@ package br.unitins.projeto.service.usuario;
 
 import java.util.List;
 
+import br.unitins.projeto.dto.cartao.CartaoDTO;
+import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoDTO;
@@ -43,9 +46,19 @@ public interface UsuarioService {
 
     UsuarioEnderecoResponseDTO getEnderecos(Long id);
 
-    UsuarioEnderecoResponseDTO updateEnderecos(Long id, UsuarioEnderecoDTO dto);
-
     EnderecoResponseDTO insertEndereco(Long id, EnderecoDTO dto);
+
+    UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco,  EnderecoDTO dto);
+
+    void deleteEndereco(Long id, Long idEndereco);
+
+    UsuarioCartaoResponseDTO getCartoes(Long id);
+
+    CartaoResponseDTO insertCartao(Long id, CartaoDTO dto);
+
+    UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, CartaoDTO dto);
+
+    void deleteCartao(Long id, Long idCartao);
 
     UsuarioTelefoneResponseDTO getTelefone(Long id);
 

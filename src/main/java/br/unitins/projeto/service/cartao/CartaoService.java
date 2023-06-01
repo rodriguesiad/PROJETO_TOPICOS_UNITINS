@@ -16,6 +16,8 @@ public interface CartaoService {
 
     CartaoResponseDTO create(CartaoDTO productDTO);
 
+    CartaoResponseDTO create(Cartao product);
+
     CartaoResponseDTO update(Long id, CartaoDTO productDTO);
 
     void delete(Long id);

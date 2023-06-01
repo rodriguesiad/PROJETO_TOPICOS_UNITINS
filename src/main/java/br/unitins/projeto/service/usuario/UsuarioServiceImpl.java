@@ -1,24 +1,30 @@
 package br.unitins.projeto.service.usuario;
 
+import br.unitins.projeto.dto.cartao.CartaoDTO;
+import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
-import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
-import br.unitins.projeto.model.*;
+import br.unitins.projeto.model.Cartao;
+import br.unitins.projeto.model.DefaultEntity;
+import br.unitins.projeto.model.Endereco;
+import br.unitins.projeto.model.Perfil;
+import br.unitins.projeto.model.PessoaFisica;
+import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.repository.ArtigoCeramicaRepository;
 import br.unitins.projeto.repository.UsuarioRepository;
 import br.unitins.projeto.service.cartao.CartaoService;
 import br.unitins.projeto.service.endereco.EnderecoService;
 import br.unitins.projeto.service.hash.HashService;
 import br.unitins.projeto.service.telefone.TelefoneService;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -74,7 +80,6 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
-
     @Transactional
     public UsuarioResponseDTO create(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
 
@@ -175,7 +180,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
             return DadosPessoaisResponseDTO.valueOf(usuario);
         } catch (NullPointerException e) {
-            throw new NullPointerException("O usuário não possui dados pessoias");
+            throw new NullPointerException("O usuário não possui dados pessoais");
         }
     }
 
@@ -209,44 +214,9 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioEnderecoResponseDTO.valueOf(usuario);
     }
 
+
     @Override
     @Transactional
-    public UsuarioEnderecoResponseDTO updateEnderecos(Long id, UsuarioEnderecoDTO dto) {
-        Usuario usuario = repository.findById(id);
-        Endereco enderecoModel = null;
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
-
-        List<Endereco> enderecos = usuario.getListaEndereco();
-
-        for (EnderecoDTO enderecoDTO : dto.listaEnderecos()) {
-
-            if (enderecos.isEmpty() && enderecoDTO.id() == null || enderecoDTO.id() == 0) {
-                this.insertEndereco(id, enderecoDTO);
-            } else {
-                int index = enderecos.stream()
-                        .map(DefaultEntity::getId)
-                        .toList().indexOf(enderecoDTO.id());
-
-                if (index != -1) {
-                    enderecoModel = enderecoService.toModel(enderecoDTO);
-                    enderecoService.update(enderecoDTO.id(), enderecoDTO);
-                    enderecos.set(index, enderecoModel);
-                }
-            }
-
-        }
-
-        if (!enderecos.isEmpty())
-            usuario.setListaEndereco(enderecos);
-        else
-            usuario = repository.findById(id);
-
-        return UsuarioEnderecoResponseDTO.valueOf(usuario);
-    }
-
-    @Override
     public EnderecoResponseDTO insertEndereco(Long id, EnderecoDTO dto) {
         Usuario usuario = repository.findById(id);
 
@@ -264,6 +234,132 @@ public class UsuarioServiceImpl implements UsuarioService {
         usuario.getListaEndereco().add(endereco);
 
         return new EnderecoResponseDTO(endereco);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, EnderecoDTO dto) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        if (usuario.getListaEndereco().isEmpty()) {
+            throw new NotFoundException("O usuário não possuiu endereços cadastrados.");
+        }
+
+        int index = usuario.getListaEndereco().stream()
+                .map(DefaultEntity::getId)
+                .toList().indexOf(idEndereco);
+
+        if (index == -1)
+            throw new NotFoundException("Endereço não encontrado");
+
+        Endereco enderecoModel = enderecoService.toModel(dto);
+        enderecoService.update(dto.id(), dto);
+        usuario.getListaEndereco().set(index, enderecoModel);
+
+        return UsuarioEnderecoResponseDTO.valueOf(usuario);
+    }
+
+    @Override
+    @Transactional
+    public void deleteEndereco(Long id, Long idEndereco) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        if (usuario.getListaEndereco().isEmpty()) {
+            throw new NotFoundException("O usuário não possuiu endereços cadastrados.");
+        }
+
+        int index = usuario.getListaEndereco().stream()
+                .map(DefaultEntity::getId)
+                .toList().indexOf(idEndereco);
+
+        if (index == -1)
+            throw new NotFoundException("Endereço não encontrado");
+
+        enderecoService.delete(idEndereco);
+        usuario.getListaEndereco().remove(index);
+    }
+
+    @Override
+    public UsuarioCartaoResponseDTO getCartoes(Long id) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        return UsuarioCartaoResponseDTO.valueOf(usuario);
+    }
+
+    @Override
+    public CartaoResponseDTO insertCartao(Long id, CartaoDTO dto) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        if (usuario.getListaCartao().isEmpty()) {
+            usuario.setListaCartao(new ArrayList<>());
+        }
+
+        Cartao cartao = cartaoService.toModel(dto);
+        cartao.setUsuario(usuario);
+        cartaoService.create(cartao);
+
+        usuario.getListaCartao().add(cartao);
+
+        return new CartaoResponseDTO(cartao);
+    }
+
+    @Override
+    public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, CartaoDTO dto) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        if (usuario.getListaCartao().isEmpty()) {
+            throw new NotFoundException("O usuário não possuiu cartões cadastrados.");
+        }
+
+        int index = usuario.getListaCartao().stream()
+                .map(DefaultEntity::getId)
+                .toList().indexOf(idCartao);
+
+        if (index == -1)
+            throw new NotFoundException("Cartão não encontrado");
+
+        Cartao cartaoModel = cartaoService.toModel(dto);
+        cartaoService.update(dto.id(), dto);
+        usuario.getListaCartao().set(index, cartaoModel);
+
+        return UsuarioCartaoResponseDTO.valueOf(usuario);
+    }
+
+    @Override
+    public void deleteCartao(Long id, Long idCartao) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        if (usuario.getListaCartao().isEmpty()) {
+            throw new NotFoundException("O usuário não possuiu cartões cadastrados.");
+        }
+
+        int index = usuario.getListaCartao().stream()
+                .map(DefaultEntity::getId)
+                .toList().indexOf(idCartao);
+
+        if (index == -1)
+            throw new NotFoundException("Cartão não encontrado");
+
+        cartaoService.delete(idCartao);
+        usuario.getListaCartao().remove(index);
     }
 
     @Override

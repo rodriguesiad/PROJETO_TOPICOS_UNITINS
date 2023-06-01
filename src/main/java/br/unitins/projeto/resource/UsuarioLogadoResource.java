@@ -1,12 +1,14 @@
 package br.unitins.projeto.resource;
 
 import br.unitins.projeto.application.Result;
+import br.unitins.projeto.dto.cartao.CartaoDTO;
+import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
-import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
@@ -19,6 +21,7 @@ import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.PATCH;
 import jakarta.ws.rs.Path;
@@ -116,16 +119,24 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/enderecos")
+    @Path("/enderecos/{idEndereco}")
     @RolesAllowed({"Admin", "User"})
-    public Response updateEnderecos(@Valid UsuarioEnderecoDTO dto) {
+    public Response updateEnderecos(@PathParam("idEndereco") Long idEndereco, @Valid EnderecoDTO dto) {
         try {
-            UsuarioEnderecoResponseDTO response = service.updateEnderecos(this.getIdUsuario(), dto);
+            UsuarioEnderecoResponseDTO response = service.updateEndereco(this.getIdUsuario(), idEndereco, dto);
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
             Result result = new Result(e.getConstraintViolations());
             return Response.status(Status.NOT_FOUND).entity(result).build();
         }
+    }
+
+    @DELETE
+    @Path("/enderecos/{idEndereco}")
+    @RolesAllowed({"Admin", "User"})
+    public Response deleteEndereco(@PathParam("idEndereco") Long idEndereco) {
+        service.deleteEndereco(this.getIdUsuario(), idEndereco);
+        return Response.status(Status.NO_CONTENT).build();
     }
 
     @PATCH
@@ -140,6 +151,54 @@ public class UsuarioLogadoResource {
             return Response.status(Status.NOT_FOUND).entity(result).build();
         }
     }
+
+    @GET
+    @Path("/cartoes")
+    @RolesAllowed({"Admin", "User"})
+    public Response getCartao() {
+        try {
+            UsuarioCartaoResponseDTO response = service.getCartoes(this.getIdUsuario());
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
+    @PATCH
+    @Path("/cartoes/{idCartao}")
+    @RolesAllowed({"Admin", "User"})
+    public Response updateCartao(@PathParam("idCartao") Long idCartao, @Valid CartaoDTO dto) {
+        try {
+            UsuarioCartaoResponseDTO response = service.updateCartao(this.getIdUsuario(), idCartao, dto);
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
+    @DELETE
+    @Path("/cartoes/{idCartao}")
+    @RolesAllowed({"Admin", "User"})
+    public Response deleteCartao(@PathParam("idCartao") Long idCartao) {
+        service.deleteCartao(this.getIdUsuario(), idCartao);
+        return Response.status(Status.NO_CONTENT).build();
+    }
+
+    @PATCH
+    @Path("/insert-cartao")
+    @RolesAllowed({"Admin", "User"})
+    public Response insertCartao(@Valid CartaoDTO dto) {
+        try {
+            CartaoResponseDTO response = service.insertCartao(this.getIdUsuario(), dto);
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
+    }
+
 
     @GET
     @Path("/contatos")

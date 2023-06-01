@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import br.unitins.projeto.service.hash.HashService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -26,6 +27,9 @@ public class CartaoServiceImpl implements CartaoService {
 
     @Inject
     Validator validator;
+
+    @Inject
+    HashService hashService;
 
     @Override
     public List<CartaoResponseDTO> getAll() {
@@ -51,11 +55,17 @@ public class CartaoServiceImpl implements CartaoService {
         Cartao entity = new Cartao();
         entity.setNumeroCartao(cartaoDTO.numeroCartao());
         entity.setNomeTitular(cartaoDTO.nomeTitular());
-        entity.setHash(cartaoDTO.cvc() + cartaoDTO.dataVencimento());
+        entity.setHash(hashService.getHashSenha(cartaoDTO.cvc() + cartaoDTO.dataVencimento()));
 
         repository.persist(entity);
 
         return new CartaoResponseDTO(entity);
+    }
+
+    @Override
+    public CartaoResponseDTO create(Cartao product) {
+        repository.persist(product);
+        return new CartaoResponseDTO(product);
     }
 
     @Override
@@ -101,7 +111,7 @@ public class CartaoServiceImpl implements CartaoService {
 
         entity.setNomeTitular(cartaoDTO.nomeTitular());
         entity.setNumeroCartao(cartaoDTO.numeroCartao());
-        entity.setHash(cartaoDTO.cvc() + cartaoDTO.dataVencimento());
+        entity.setHash(hashService.getHashSenha(cartaoDTO.cvc() + cartaoDTO.dataVencimento()));
 
         return entity;
     }

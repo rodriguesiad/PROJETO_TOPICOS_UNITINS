@@ -1,19 +1,9 @@
 package br.unitins.projeto.model;
 
+import jakarta.persistence.*;
+
 import java.util.List;
 import java.util.Set;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 
 @Entity
 public class Usuario extends DefaultEntity {
@@ -47,7 +37,7 @@ public class Usuario extends DefaultEntity {
     private PessoaFisica pessoaFisica;
 
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Cartao> cartoes;
+    private List<Cartao> listaCartao;
 
     @ManyToMany
     @JoinTable(name = "lista_desejo", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_produto"))
@@ -109,12 +99,12 @@ public class Usuario extends DefaultEntity {
         this.pessoaFisica = pessoaFisica;
     }
 
-    public List<Cartao> getCartoes() {
-        return cartoes;
+    public List<Cartao> getListaCartao() {
+        return listaCartao;
     }
 
-    public void setCartoes(List<Cartao> cartoes) {
-        this.cartoes = cartoes;
+    public void setListaCartao(List<Cartao> listaCartao) {
+        this.listaCartao = listaCartao;
     }
 
     public List<ArtigoCeramica> getListaDesejo() {
