@@ -14,7 +14,7 @@ public class Cartao extends DefaultEntity {
     @Column(nullable = false, length = 60)
     private String nomeTitular;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String hash;
 
     @ManyToOne

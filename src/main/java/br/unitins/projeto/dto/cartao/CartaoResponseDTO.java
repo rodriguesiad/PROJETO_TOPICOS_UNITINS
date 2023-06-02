@@ -7,12 +7,11 @@ public record CartaoResponseDTO(
 
         String numeroCartao,
 
-        String nomeTitular,
-
-        String hash) {
+        String nomeTitular
+) {
 
     public CartaoResponseDTO(Cartao entity) {
-        this(entity.getId(), entity.getNumeroCartao(), entity.getNomeTitular(), entity.getHash());
+        this(entity.getId(), entity.getNumeroCartao(), entity.getNomeTitular());
     }
 
 }

@@ -296,6 +296,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public CartaoResponseDTO insertCartao(Long id, CartaoDTO dto) {
         Usuario usuario = repository.findById(id);
 
@@ -316,6 +317,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, CartaoDTO dto) {
         Usuario usuario = repository.findById(id);
 
@@ -341,6 +343,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     }
 
     @Override
+    @Transactional
     public void deleteCartao(Long id, Long idCartao) {
         Usuario usuario = repository.findById(id);
 
