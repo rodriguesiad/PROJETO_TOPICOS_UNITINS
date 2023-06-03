@@ -18,6 +18,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 
@@ -29,8 +30,12 @@ public class MunicipioResource {
     @Inject
     MunicipioService service;
 
+    private static final Logger LOG = Logger.getLogger(MunicipioResource.class);
+
     @GET
     public List<MunicipioResponseDTO> getAll() {
+        LOG.info("Buscando todos os municipios.");
+        LOG.debug("ERRO DE DEBUG.");
         return service.getAll();
     }
 
@@ -43,46 +48,92 @@ public class MunicipioResource {
     @POST
     @RolesAllowed({"Admin"})
     public Response insert(MunicipioDTO dto) {
+        LOG.infof("Inserindo um municipio: %s", dto.descricao());
+        Result result = null;
+
         try {
-            MunicipioResponseDTO Municipio = service.create(dto);
-            return Response.status(Status.CREATED).entity(Municipio).build();
+            MunicipioResponseDTO respose = service.create(dto);
+            LOG.infof("Município (%d) criado com sucesso.", respose.id());
+            return Response.status(Status.CREATED).entity(respose).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao incluir um municipio.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PUT
     @Path("/{id}")
     @RolesAllowed({"Admin"})
     public Response update(@PathParam("id") Long id, MunicipioDTO dto) {
+        LOG.infof("Alterando um municipio: %s", dto.descricao());
+        Result result = null;
+
         try {
-            MunicipioResponseDTO Municipio = service.update(id, dto);
-            return Response.ok(Municipio).build();
+            MunicipioResponseDTO response = service.update(id, dto);
+            LOG.infof("Município (%d) alterado com sucesso.", response.id());
+            return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar um município.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+
     }
 
     @DELETE
     @Path("/{id}")
     @RolesAllowed({"Admin"})
     public Response delete(@PathParam("id") Long id) {
-        service.delete(id);
-        return Response.status(Status.NO_CONTENT).build();
-    }
+        LOG.infof("Deletando um municipio: %s", id);
+        Result result = null;
 
-    @GET
-    @Path("/count")
-    public Long count() {
-        return service.count();
+        try {
+            service.delete(id);
+            LOG.infof("Município (%d) deletado com sucesso.", id);
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao deletar um município.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
     @Path("/search/{descricao}")
-    public List<MunicipioResponseDTO> search(@PathParam("descricao") String descricao) {
-        return service.findByDescricao(descricao);
+    public Response search(@PathParam("descricao") String descricao) {
+        LOG.infof("Pesquisando municípios pelo nome: %s", descricao);
+        Result result = null;
+
+        try {
+            List<MunicipioResponseDTO> response = service.findByDescricao(descricao);
+            LOG.infof("Pesquisa realizada com sucesso.");
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao pesquisar municípios.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
 }
