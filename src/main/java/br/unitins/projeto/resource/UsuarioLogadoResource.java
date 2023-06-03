@@ -3,6 +3,7 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.cartao.CartaoDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
+import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
@@ -14,6 +15,7 @@ import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
 import br.unitins.projeto.form.ImageForm;
+import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.file.FileService;
 import br.unitins.projeto.service.usuario.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
@@ -34,6 +36,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import java.io.IOException;
+import java.util.List;
 
 @Path("/usuariologado")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -42,6 +45,9 @@ public class UsuarioLogadoResource {
 
     @Inject
     UsuarioService service;
+
+    @Inject
+    CompraService compraService;
 
     @Inject
     JsonWebToken jwt;
@@ -140,7 +146,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/insert-endereco")
+    @Path("/cadastro-endereco")
     @RolesAllowed({"Admin", "User"})
     public Response insertEnderecos(@Valid EnderecoDTO dto) {
         try {
@@ -187,7 +193,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/insert-cartao")
+    @Path("/cadastro-cartao")
     @RolesAllowed({"Admin", "User"})
     public Response insertCartao(@Valid CartaoDTO dto) {
         try {
@@ -254,6 +260,19 @@ public class UsuarioLogadoResource {
         response.header("Content-Disposition", "attachment;filename=" + nomeImagem);
 
         return response.build();
+    }
+
+    @GET
+    @Path("/minhas-compras")
+    @RolesAllowed({"Admin", "User"})
+    public Response minhasCompras() {
+        try {
+            List<CompraResponseDTO> response = compraService.findByUsuario(this.getIdUsuario());
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            Result result = new Result(e.getConstraintViolations());
+            return Response.status(Status.NOT_FOUND).entity(result).build();
+        }
     }
 
 }

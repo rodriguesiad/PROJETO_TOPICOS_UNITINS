@@ -1,6 +1,7 @@
 package br.unitins.projeto.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -18,24 +19,24 @@ public class Compra extends DefaultEntity {
     private LocalDateTime data;
 
     @Column(name = "total_compra", nullable = false)
-    private Double totalCompra;
+    private Double totalCompra = 0.0;
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
     private Usuario usuario;
 
-    @ManyToOne
+    @ManyToOne(cascade= CascadeType.ALL)
     @JoinColumn(name = "id_endereco", nullable = false)
     private EnderecoCompra enderecoCompra;
 
     @Column(name = "status", nullable = false)
     private StatusCompra statusCompra;
 
-    @OneToMany(mappedBy = "compra")
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
     private List<ItemCompra> itensCompra;
 
-    @OneToMany(mappedBy = "compra")
-    private List<HistoricoEntrega> historicoEntregra;
+    @OneToMany(mappedBy = "compra", cascade = CascadeType.ALL)
+    private List<HistoricoEntrega> historicoEntrega;
 
     public LocalDateTime getData() {
         return data;
@@ -85,12 +86,12 @@ public class Compra extends DefaultEntity {
         this.itensCompra = itensCompra;
     }
 
-    public List<HistoricoEntrega> getHistoricoEntregra() {
-        return historicoEntregra;
+    public List<HistoricoEntrega> getHistoricoEntrega() {
+        return historicoEntrega;
     }
 
-    public void setHistoricoEntregra(List<HistoricoEntrega> historicoEntregra) {
-        this.historicoEntregra = historicoEntregra;
+    public void setHistoricoEntrega(List<HistoricoEntrega> historicoEntrega) {
+        this.historicoEntrega = historicoEntrega;
     }
 
 }

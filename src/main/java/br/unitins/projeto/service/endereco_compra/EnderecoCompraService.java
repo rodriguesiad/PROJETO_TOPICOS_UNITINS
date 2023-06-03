@@ -4,6 +4,8 @@ import java.util.List;
 
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
 import br.unitins.projeto.dto.endereco_compra.EnderecoCompraResponseDTO;
+import br.unitins.projeto.model.EnderecoCompra;
+import jakarta.validation.Valid;
 
 public interface EnderecoCompraService {
 
@@ -11,14 +13,10 @@ public interface EnderecoCompraService {
 
     EnderecoCompraResponseDTO findById(Long id);
 
-    EnderecoCompraResponseDTO create(EnderecoCompraDTO productDTO);
+    EnderecoCompra create(EnderecoCompraDTO productDTO);
+//
+//    EnderecoCompra toEndereco(Long idEndereco);
 
-    EnderecoCompraResponseDTO update(Long id, EnderecoCompraDTO productDTO);
-
-    void delete(Long id);
-
-    List<EnderecoCompraResponseDTO> findByCEP(String cep);
-
-    Long count();
+    EnderecoCompra toModel(@Valid EnderecoCompraDTO dto);
 
 }

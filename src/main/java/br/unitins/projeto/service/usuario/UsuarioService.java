@@ -17,6 +17,7 @@ import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
 import br.unitins.projeto.model.Usuario;
+import jakarta.validation.Valid;
 
 public interface UsuarioService {
 
@@ -24,9 +25,7 @@ public interface UsuarioService {
 
     UsuarioResponseDTO findById(Long id);
 
-    UsuarioResponseDTO create(UsuarioDTO productDTO);
-
-    UsuarioResponseDTO update(Long id, UsuarioDTO productDTO);
+    UsuarioResponseDTO create(@Valid UsuarioDTO productDTO);
 
     void delete(Long id);
 
@@ -40,30 +39,31 @@ public interface UsuarioService {
 
     DadosPessoaisResponseDTO getDadosPessoais(Long id);
 
-    DadosPessoaisResponseDTO updateDadosPessoais(Long id, DadosPessoaisDTO dto);
+    DadosPessoaisResponseDTO updateDadosPessoais(Long id, @Valid DadosPessoaisDTO dto);
 
-    Boolean updateSenha(Long id, SenhaDTO senha);
+    Boolean updateSenha(Long id, @Valid SenhaDTO senha);
 
     UsuarioEnderecoResponseDTO getEnderecos(Long id);
 
-    EnderecoResponseDTO insertEndereco(Long id, EnderecoDTO dto);
+    EnderecoResponseDTO insertEndereco(Long id, @Valid EnderecoDTO dto);
 
-    UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco,  EnderecoDTO dto);
+    UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoDTO dto);
 
     void deleteEndereco(Long id, Long idEndereco);
 
     UsuarioCartaoResponseDTO getCartoes(Long id);
 
-    CartaoResponseDTO insertCartao(Long id, CartaoDTO dto);
+    CartaoResponseDTO insertCartao(Long id, @Valid CartaoDTO dto);
 
-    UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, CartaoDTO dto);
+    UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoDTO dto);
 
     void deleteCartao(Long id, Long idCartao);
 
     UsuarioTelefoneResponseDTO getTelefone(Long id);
 
-    UsuarioTelefoneResponseDTO updateTelefone(Long id, UsuarioTelefoneDTO dto);
+    UsuarioTelefoneResponseDTO updateTelefone(Long id, @Valid UsuarioTelefoneDTO dto);
 
     UsuarioResponseDTO update(Long id, String nomeImagem);
+
 
 }

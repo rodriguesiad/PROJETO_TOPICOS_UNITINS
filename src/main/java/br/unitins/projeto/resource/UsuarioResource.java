@@ -3,6 +3,7 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
+import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.usuario.UsuarioService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -12,6 +13,7 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -30,6 +32,9 @@ public class UsuarioResource {
 
     @Inject
     UsuarioService service;
+
+    @Inject
+    CompraService compraService;
 
     @GET
     @RolesAllowed({"Admin"})

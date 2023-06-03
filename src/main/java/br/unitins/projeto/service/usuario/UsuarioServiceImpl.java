@@ -30,6 +30,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
@@ -71,17 +72,14 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioResponseDTO findById(Long id) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuario não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         return UsuarioResponseDTO.valueOf(usuario);
     }
 
     @Override
     @Transactional
-    public UsuarioResponseDTO create(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
+    public UsuarioResponseDTO create(@Valid UsuarioDTO usuarioDTO) throws ConstraintViolationException {
 
         validar(usuarioDTO);
 
@@ -110,12 +108,6 @@ public class UsuarioServiceImpl implements UsuarioService {
         return UsuarioResponseDTO.valueOf(entity);
     }
 
-    @Override
-    @Transactional
-    public UsuarioResponseDTO update(Long id, UsuarioDTO usuarioDTO) throws ConstraintViolationException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
-    }
 
     private void validar(UsuarioDTO usuarioDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<UsuarioDTO>> violations = validator.validate(usuarioDTO);
@@ -157,21 +149,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public DadosPessoaisResponseDTO getDadosPessoais(Long id) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         return DadosPessoaisResponseDTO.valueOf(usuario);
     }
 
     @Override
     @Transactional
-    public DadosPessoaisResponseDTO updateDadosPessoais(Long id, DadosPessoaisDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public DadosPessoaisResponseDTO updateDadosPessoais(Long id, @Valid DadosPessoaisDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         try {
             PessoaFisica pessoa = usuario.getPessoaFisica();
@@ -186,11 +172,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public Boolean updateSenha(Long id, SenhaDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public Boolean updateSenha(Long id, @Valid SenhaDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         try {
             if (usuario.getSenha().equals(hashService.getHashSenha(dto.senhaAtual()))) {
@@ -206,10 +189,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioEnderecoResponseDTO getEnderecos(Long id) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         return UsuarioEnderecoResponseDTO.valueOf(usuario);
     }
@@ -217,11 +197,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public EnderecoResponseDTO insertEndereco(Long id, EnderecoDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public EnderecoResponseDTO insertEndereco(Long id, @Valid EnderecoDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaEndereco().isEmpty()) {
             usuario.setListaEndereco(new ArrayList<>());
@@ -238,11 +215,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, EnderecoDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaEndereco().isEmpty()) {
             throw new NotFoundException("O usuário não possuiu endereços cadastrados.");
@@ -265,10 +239,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void deleteEndereco(Long id, Long idEndereco) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaEndereco().isEmpty()) {
             throw new NotFoundException("O usuário não possuiu endereços cadastrados.");
@@ -287,21 +258,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioCartaoResponseDTO getCartoes(Long id) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         return UsuarioCartaoResponseDTO.valueOf(usuario);
     }
 
     @Override
     @Transactional
-    public CartaoResponseDTO insertCartao(Long id, CartaoDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public CartaoResponseDTO insertCartao(Long id, @Valid CartaoDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaCartao().isEmpty()) {
             usuario.setListaCartao(new ArrayList<>());
@@ -318,11 +283,8 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, CartaoDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaCartao().isEmpty()) {
             throw new NotFoundException("O usuário não possuiu cartões cadastrados.");
@@ -345,10 +307,7 @@ public class UsuarioServiceImpl implements UsuarioService {
     @Override
     @Transactional
     public void deleteCartao(Long id, Long idCartao) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaCartao().isEmpty()) {
             throw new NotFoundException("O usuário não possuiu cartões cadastrados.");
@@ -367,21 +326,15 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     public UsuarioTelefoneResponseDTO getTelefone(Long id) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+        Usuario usuario = this.getUsuario(id);
 
         return UsuarioTelefoneResponseDTO.valueOf(usuario);
     }
 
     @Override
     @Transactional
-    public UsuarioTelefoneResponseDTO updateTelefone(Long id, UsuarioTelefoneDTO dto) {
-        Usuario usuario = repository.findById(id);
-
-        if (usuario == null)
-            throw new NotFoundException("Usuário não encontrado.");
+    public UsuarioTelefoneResponseDTO updateTelefone(Long id, @Valid UsuarioTelefoneDTO dto) {
+        Usuario usuario = this.getUsuario(id);
 
         try {
             usuario.setTelefone(telefoneService.toModel(dto.telefone()));
@@ -400,6 +353,15 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setNomeImagem(nomeImagem);
 
         return UsuarioResponseDTO.valueOf(entity);
+    }
+
+    private Usuario getUsuario(Long id) {
+        Usuario usuario = repository.findById(id);
+
+        if (usuario == null)
+            throw new NotFoundException("Usuário não encontrado.");
+
+        return usuario;
     }
 
 }

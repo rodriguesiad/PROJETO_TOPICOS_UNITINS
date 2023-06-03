@@ -27,10 +27,6 @@ public class EnderecoCompra extends DefaultEntity {
     @JoinColumn(name = "id_municipio", nullable = false)
     private Municipio municipio;
 
-    @ManyToOne
-    @JoinColumn(name = "id_usuario", nullable = false)
-    public Usuario usuario;
-
     public String getLogradouro() {
         return logradouro;
     }
@@ -77,14 +73,6 @@ public class EnderecoCompra extends DefaultEntity {
 
     public void setMunicipio(Municipio municipio) {
         this.municipio = municipio;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
 }

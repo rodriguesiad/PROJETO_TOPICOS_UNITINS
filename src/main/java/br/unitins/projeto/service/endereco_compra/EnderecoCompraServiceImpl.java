@@ -1,28 +1,33 @@
 package br.unitins.projeto.service.endereco_compra;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
+import br.unitins.projeto.dto.endereco_compra.EnderecoCompraResponseDTO;
+import br.unitins.projeto.model.Endereco;
+import br.unitins.projeto.model.EnderecoCompra;
+import br.unitins.projeto.repository.EnderecoCompraRepository;
+import br.unitins.projeto.repository.EnderecoRepository;
+import br.unitins.projeto.repository.MunicipioRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
-import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
-import br.unitins.projeto.dto.endereco_compra.EnderecoCompraResponseDTO;
-import br.unitins.projeto.model.EnderecoCompra;
-import br.unitins.projeto.repository.MunicipioRepository;
-import br.unitins.projeto.repository.EnderecoCompraRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class EnderecoCompraServiceImpl implements EnderecoCompraService {
 
     @Inject
     EnderecoCompraRepository repository;
+
+    @Inject
+    EnderecoRepository enderecoRepository;
 
     @Inject
     MunicipioRepository municipioRepository;
@@ -48,7 +53,7 @@ public class EnderecoCompraServiceImpl implements EnderecoCompraService {
 
     @Override
     @Transactional
-    public EnderecoCompraResponseDTO create(EnderecoCompraDTO enderecoCompraDTO) throws ConstraintViolationException {
+    public EnderecoCompra create(EnderecoCompraDTO enderecoCompraDTO) throws ConstraintViolationException {
         validar(enderecoCompraDTO);
 
         EnderecoCompra entity = new EnderecoCompra();
@@ -62,26 +67,9 @@ public class EnderecoCompraServiceImpl implements EnderecoCompraService {
 
         repository.persist(entity);
 
-        return new EnderecoCompraResponseDTO(entity);
+        return entity;
     }
 
-    @Override
-    @Transactional
-    public EnderecoCompraResponseDTO update(Long id, EnderecoCompraDTO enderecoCompraDTO)
-            throws ConstraintViolationException {
-        validar(enderecoCompraDTO);
-
-        EnderecoCompra entity = repository.findById(id);
-
-        entity.setLogradouro(enderecoCompraDTO.logradouro());
-        entity.setBairro(enderecoCompraDTO.bairro());
-        entity.setNumero(enderecoCompraDTO.numero());
-        entity.setComplemento(enderecoCompraDTO.complemento());
-        entity.setCep(enderecoCompraDTO.cep());
-        entity.setMunicipio(municipioRepository.findById(enderecoCompraDTO.idMunicipio()));
-
-        return new EnderecoCompraResponseDTO(entity);
-    }
 
     private void validar(EnderecoCompraDTO enderecoCompraDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<EnderecoCompraDTO>> violations = validator.validate(enderecoCompraDTO);
@@ -90,21 +78,51 @@ public class EnderecoCompraServiceImpl implements EnderecoCompraService {
             throw new ConstraintViolationException(violations);
     }
 
-    @Override
-    @Transactional
-    public void delete(Long id) {
-        repository.deleteById(id);
-    }
+//    @Override
+//    public EnderecoCompraDTO toEndereco(Long idEndereco) {
+//        Endereco endereco = enderecoRepository.findById(idEndereco);
+//
+//        if (endereco == null)
+//            throw new NotFoundException("Endereço não encontrado.");
+//
+//        return new EnderecoCompraDTO(endereco.getLogradouro(),
+//                endereco.getBairro(),
+//                endereco.getNumero(),
+//                endereco.getComplemento(),
+//                endereco.getCep(),
+//                endereco.getMunicipio().getId());
+//    }
+
+//    @Override
+//    public EnderecoCompra toEndereco(Long idEndereco) {
+//        Endereco endereco = enderecoRepository.findById(idEndereco);
+//
+//        if (endereco == null)
+//            throw new NotFoundException("Endereço não encontrado.");
+//
+//        EnderecoCompra enderecoCompra = new EnderecoCompra();
+//        enderecoCompra.setBairro(endereco.getBairro());
+//        enderecoCompra.setCep(endereco.getCep());
+//        enderecoCompra.setNumero(endereco.getNumero());
+//        enderecoCompra.setComplemento(endereco.getComplemento());
+//        enderecoCompra.setMunicipio(endereco.getMunicipio());
+//        enderecoCompra.setLogradouro(enderecoCompra.getLogradouro());
+//
+//        return enderecoCompra;
+//    }
 
     @Override
-    public List<EnderecoCompraResponseDTO> findByCEP(String cep) {
-        List<EnderecoCompra> list = repository.findByCEP(cep);
-        return list.stream().map(EnderecoCompraResponseDTO::new).collect(Collectors.toList());
-    }
+    public EnderecoCompra toModel(@Valid EnderecoCompraDTO dto) {
 
-    @Override
-    public Long count() {
-        return repository.count();
+        EnderecoCompra enderecoCompra = new EnderecoCompra();
+        enderecoCompra.setBairro(dto.bairro());
+        enderecoCompra.setCep(dto.cep());
+        enderecoCompra.setNumero(dto.numero());
+        enderecoCompra.setComplemento(dto.complemento());
+        enderecoCompra.setMunicipio(municipioRepository.findById(dto.idMunicipio()));
+        enderecoCompra.setLogradouro(dto.logradouro());
+
+        return enderecoCompra;
     }
 
 }
