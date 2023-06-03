@@ -33,6 +33,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 
 import java.io.IOException;
@@ -55,6 +56,8 @@ public class UsuarioLogadoResource {
     @Inject
     FileService fileService;
 
+    private static final Logger LOG = Logger.getLogger(UsuarioLogadoResource.class);
+
 
     private Long getIdUsuario() {
         String login = jwt.getSubject();
@@ -67,7 +70,7 @@ public class UsuarioLogadoResource {
     public Response getPerfilUsuario() {
         String login = jwt.getSubject();
         UsuarioResponseDTO usuario = service.findByLogin(login);
-
+        LOG.info("Buscando perfil do usuário logado.");
         return Response.ok(usuario).build();
     }
 
@@ -75,134 +78,253 @@ public class UsuarioLogadoResource {
     @Path("/dadosPessoais")
     @RolesAllowed({"Admin", "User"})
     public Response getDadosPessoais() {
+        LOG.info("Buscando dados pessoais do usuario");
+        Result result = null;
+
         try {
             DadosPessoaisResponseDTO response = service.getDadosPessoais(this.getIdUsuario());
+            LOG.infof("Pequisa realizada com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao pesquisar dados pessoais.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/dadosPessoais")
     @RolesAllowed({"Admin", "User"})
     public Response setDadosPessoais(@Valid DadosPessoaisDTO dto) {
+        LOG.infof("Alterando dados pessoais");
+        Result result = null;
+
         try {
             DadosPessoaisResponseDTO response = service.updateDadosPessoais(this.getIdUsuario(), dto);
+            LOG.infof("Dados pessoais alterados com sucesso.", response.id());
             return Response.ok(response).build();
-
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar os dados pessoais.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/alterarSenha")
     @RolesAllowed({"Admin", "User"})
     public Response alterarSenha(@Valid SenhaDTO dto) {
+        LOG.info("Atualizando senha");
+        Result result = null;
+
         try {
             Boolean response = service.updateSenha(this.getIdUsuario(), dto);
+            LOG.info("Senha alterada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar senha.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
     @Path("/enderecos")
     @RolesAllowed({"Admin", "User"})
     public Response getEnderecos() {
+        LOG.info("Buscando endereços");
+        Result result = null;
+
         try {
             UsuarioEnderecoResponseDTO response = service.getEnderecos(this.getIdUsuario());
+            LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao pesquisa endereços.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/enderecos/{idEndereco}")
     @RolesAllowed({"Admin", "User"})
     public Response updateEnderecos(@PathParam("idEndereco") Long idEndereco, @Valid EnderecoDTO dto) {
+        LOG.info("Alterando endereços");
+        Result result = null;
+
         try {
             UsuarioEnderecoResponseDTO response = service.updateEndereco(this.getIdUsuario(), idEndereco, dto);
+            LOG.infof("Endereço alterado com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar endereço.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @DELETE
     @Path("/enderecos/{idEndereco}")
     @RolesAllowed({"Admin", "User"})
     public Response deleteEndereco(@PathParam("idEndereco") Long idEndereco) {
-        service.deleteEndereco(this.getIdUsuario(), idEndereco);
-        return Response.status(Status.NO_CONTENT).build();
+        LOG.infof("Deletando um endereço");
+        Result result = null;
+
+        try {
+            service.deleteEndereco(this.getIdUsuario(), idEndereco);
+            LOG.infof("Endereço (%d) deletado com sucesso.", idEndereco);
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao deletar endereço.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/cadastro-endereco")
     @RolesAllowed({"Admin", "User"})
     public Response insertEnderecos(@Valid EnderecoDTO dto) {
+        LOG.infof("Inserindo um endereço");
+        Result result = null;
+
         try {
             EnderecoResponseDTO response = service.insertEndereco(this.getIdUsuario(), dto);
+            LOG.infof("Endereço (%d) inserido com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao inserir endereço.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
     @Path("/cartoes")
     @RolesAllowed({"Admin", "User"})
     public Response getCartao() {
+        LOG.info("Buscando cartões");
+        Result result = null;
+
         try {
             UsuarioCartaoResponseDTO response = service.getCartoes(this.getIdUsuario());
+            LOG.info("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar buscar cartões.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/cartoes/{idCartao}")
     @RolesAllowed({"Admin", "User"})
     public Response updateCartao(@PathParam("idCartao") Long idCartao, @Valid CartaoDTO dto) {
+        LOG.infof("Alterando cartao: %s", dto.numeroCartao());
+        Result result = null;
+
         try {
             UsuarioCartaoResponseDTO response = service.updateCartao(this.getIdUsuario(), idCartao, dto);
+            LOG.info("Cartão alterado com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar cartao.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @DELETE
     @Path("/cartoes/{idCartao}")
     @RolesAllowed({"Admin", "User"})
     public Response deleteCartao(@PathParam("idCartao") Long idCartao) {
-        service.deleteCartao(this.getIdUsuario(), idCartao);
-        return Response.status(Status.NO_CONTENT).build();
+        LOG.infof("Deletando cartão: %s", idCartao);
+        Result result = null;
+
+        try {
+            service.deleteCartao(this.getIdUsuario(), idCartao);
+            LOG.infof("Cartao (%d) deletado com sucesso.", idCartao);
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao deletar um cartao.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/cadastro-cartao")
     @RolesAllowed({"Admin", "User"})
     public Response insertCartao(@Valid CartaoDTO dto) {
+        LOG.infof("Inserindo um cartao: %s", dto.numeroCartao());
+        Result result = null;
+
         try {
             CartaoResponseDTO response = service.insertCartao(this.getIdUsuario(), dto);
+            LOG.infof("Cartão (%d) inserido com sucesso.", response.id());
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar um cartao.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
 
@@ -210,26 +332,46 @@ public class UsuarioLogadoResource {
     @Path("/contatos")
     @RolesAllowed({"Admin", "User"})
     public Response getContatos() {
+        LOG.info("Buscando contatos");
+        Result result = null;
+
         try {
             UsuarioTelefoneResponseDTO response = service.getTelefone(this.getIdUsuario());
+            LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao buscar contatos.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @Path("/contatos")
     @RolesAllowed({"Admin", "User"})
     public Response alterarContatos(@Valid UsuarioTelefoneDTO dto) {
+        LOG.info("Alterando contatos");
+        Result result = null;
+
         try {
             UsuarioTelefoneResponseDTO response = service.updateTelefone(this.getIdUsuario(), dto);
+            LOG.info("Contatos alterados com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar contatos.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
@@ -266,13 +408,23 @@ public class UsuarioLogadoResource {
     @Path("/minhas-compras")
     @RolesAllowed({"Admin", "User"})
     public Response minhasCompras() {
+        LOG.infof("Buscando compras");
+        Result result = null;
+
         try {
             List<CompraResponseDTO> response = compraService.findByUsuario(this.getIdUsuario());
+            LOG.info("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao buscar compras.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
 }

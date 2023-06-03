@@ -24,6 +24,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 
@@ -41,6 +42,8 @@ public class CompraResource {
     @Inject
     JsonWebToken jwt;
 
+    private static final Logger LOG = Logger.getLogger(CompraResource.class);
+
     private Long getIdUsuario() {
         String login = jwt.getSubject();
         UsuarioResponseDTO usuario = usuarioService.findByLogin(login);
@@ -50,52 +53,92 @@ public class CompraResource {
     @POST
     @RolesAllowed({"Admin", "User"})
     public Response insert(@Valid CompraDTO dto) {
+        LOG.info("Inserindo uma compra");
+        Result result = null;
+
         try {
-            CompraResponseDTO compra = service.create(dto, getIdUsuario());
-            return Response.status(Status.CREATED).entity(compra).build();
+            CompraResponseDTO response = service.create(dto, getIdUsuario());
+            LOG.infof("Compra criada com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao incluir uma compra.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @RolesAllowed({"Admin", "User"})
     @Path("/{idCompra}/alterar-status")
     public Response alterStatus(@PathParam("idCompra") Long id, @Valid StatusCompraDTO dto) {
+        LOG.info("Alterando status de uma compra");
+        Result result = null;
+
         try {
             CompraResponseDTO response = service.alterStatusCompra(id, dto);
-            return Response.ok().entity(response).build();
+            LOG.infof("Status alterado com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao alterar o status de uma compra.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @GET
     @RolesAllowed({"Admin", "User"})
     @Path("/{idCompra}/historico-entrega")
     public Response getHistoricoEntrega(@PathParam("idCompra") Long id) {
+        LOG.infof("Buscando historíco entrega de uma compra: %s", id);
+        Result result = null;
+
         try {
             List<HistoricoEntregaResponseDTO> response = service.getHistoricoEntrega(id);
-            return Response.ok().entity(response).build();
+            LOG.infof("Históricos buscados com sucesso.");
+            return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao buscar histórico.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
     @PATCH
     @RolesAllowed({"Admin", "User"})
     @Path("/{idCompra}/historico-entrega")
     public Response insertHistoricoEntrega(@PathParam("idCompra") Long id, @Valid HistoricoEntregaDTO dto) {
+        LOG.infof("Inserindo historico de entrega: %s", id);
+        Result result = null;
+
         try {
             HistoricoEntregaResponseDTO response = service.insertHistoricoEntrega(id, dto);
-            return Response.ok().entity(response).build();
+            LOG.infof("Histórico inserido com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
-            Result result = new Result(e.getConstraintViolations());
-            return Response.status(Status.NOT_FOUND).entity(result).build();
+            LOG.error("Erro ao incluir um historico.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
         }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
     }
 
 }

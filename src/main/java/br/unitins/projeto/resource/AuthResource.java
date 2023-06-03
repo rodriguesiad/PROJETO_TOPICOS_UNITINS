@@ -15,6 +15,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 
 @Path("/auth")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -33,9 +34,12 @@ public class AuthResource {
     @Inject
     JsonWebToken jwt;
 
+    private static final Logger LOG = Logger.getLogger(AuthResource.class);
+
     @POST
     @Produces(MediaType.TEXT_PLAIN)
     public Response login(@Valid AuthUsuarioDTO authDTO) {
+        LOG.infof("Fazendo login de usuário: %s", authDTO.login());
         String hash = hashService.getHashSenha(authDTO.senha());
 
         Usuario usuario = usuarioService.findByLoginAndSenha(authDTO.login(), hash);

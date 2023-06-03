@@ -35,13 +35,13 @@ public class MunicipioResource {
     @GET
     public List<MunicipioResponseDTO> getAll() {
         LOG.info("Buscando todos os municipios.");
-        LOG.debug("ERRO DE DEBUG.");
         return service.getAll();
     }
 
     @GET
     @Path("/{id}")
     public MunicipioResponseDTO findById(@PathParam("id") Long id) {
+        LOG.info("Buscando um município pelo id.");
         return service.findById(id);
     }
 
@@ -52,9 +52,9 @@ public class MunicipioResource {
         Result result = null;
 
         try {
-            MunicipioResponseDTO respose = service.create(dto);
-            LOG.infof("Município (%d) criado com sucesso.", respose.id());
-            return Response.status(Status.CREATED).entity(respose).build();
+            MunicipioResponseDTO response = service.create(dto);
+            LOG.infof("Município (%d) criado com sucesso.", response.id());
+            return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao incluir um municipio.");
             LOG.debug(e.getMessage());
@@ -88,7 +88,6 @@ public class MunicipioResource {
         }
 
         return Response.status(Status.NOT_FOUND).entity(result).build();
-
     }
 
     @DELETE
@@ -123,7 +122,7 @@ public class MunicipioResource {
         try {
             List<MunicipioResponseDTO> response = service.findByDescricao(descricao);
             LOG.infof("Pesquisa realizada com sucesso.");
-            return Response.status(Status.NO_CONTENT).build();
+            return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao pesquisar municípios.");
             LOG.debug(e.getMessage());
