@@ -10,6 +10,8 @@ import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.ListaDesejoDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.UsuarioListaDesejoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
@@ -18,9 +20,12 @@ import br.unitins.projeto.model.DefaultEntity;
 import br.unitins.projeto.model.Endereco;
 import br.unitins.projeto.model.Perfil;
 import br.unitins.projeto.model.PessoaFisica;
+import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.model.Usuario;
 import br.unitins.projeto.repository.ArtigoCeramicaRepository;
+import br.unitins.projeto.repository.ProdutoRepository;
 import br.unitins.projeto.repository.UsuarioRepository;
+import br.unitins.projeto.service.artigo_ceramica.ArtigoCeramicaService;
 import br.unitins.projeto.service.cartao.CartaoService;
 import br.unitins.projeto.service.endereco.EnderecoService;
 import br.unitins.projeto.service.hash.HashService;
@@ -63,6 +68,12 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Inject
     HashService hashService;
+
+    @Inject
+    ArtigoCeramicaService artigoCeramicaService;
+
+    @Inject
+    ProdutoRepository produtoRepository;
 
     @Override
     public List<UsuarioResponseDTO> getAll() {
@@ -353,6 +364,47 @@ public class UsuarioServiceImpl implements UsuarioService {
         entity.setNomeImagem(nomeImagem);
 
         return UsuarioResponseDTO.valueOf(entity);
+    }
+
+    @Override
+    public UsuarioListaDesejoResponseDTO getListaDesejo(Long id) {
+        Usuario usuario = getUsuario(id);
+        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
+    }
+
+    @Override
+    @Transactional
+    public UsuarioListaDesejoResponseDTO insertProdutoListaDesejo(Long id, @Valid ListaDesejoDTO dto) {
+        Usuario usuario = getUsuario(id);
+        Produto produto = produtoRepository.findById(dto.idProduto());
+
+        if (usuario.getListaDesejo().isEmpty()) {
+            usuario.setListaDesejo(new ArrayList<>());
+        }
+
+        usuario.getListaDesejo().add(produto);
+
+        return UsuarioListaDesejoResponseDTO.valueOf(usuario);
+    }
+
+    @Override
+    @Transactional
+    public void deleteItemListaDesejo(Long id, Long idProduto) {
+        Usuario usuario = getUsuario(id);
+        Produto produto = produtoRepository.findById(idProduto);
+
+        if (usuario.getListaDesejo().isEmpty()) {
+            throw new NotFoundException("O usuário não possuiu produtos na lista de desejo.");
+        }
+
+        int index = usuario.getListaDesejo().stream()
+                .map(DefaultEntity::getId)
+                .toList().indexOf(idProduto);
+
+        if (index == -1)
+            throw new NotFoundException("Produto não encontrado na lista de desejo");
+
+        usuario.getListaDesejo().remove(idProduto);
     }
 
     private Usuario getUsuario(Long id) {

@@ -1,10 +1,5 @@
 package br.unitins.projeto.dto.usuario;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-
 import br.unitins.projeto.dto.artigo_ceramica.ArtigoCeramicaResponseDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
@@ -12,8 +7,13 @@ import br.unitins.projeto.dto.telefone.TelefoneResponseDTO;
 import br.unitins.projeto.model.ArtigoCeramica;
 import br.unitins.projeto.model.Cartao;
 import br.unitins.projeto.model.Endereco;
+import br.unitins.projeto.model.Produto;
 import br.unitins.projeto.model.Telefone;
 import br.unitins.projeto.model.Usuario;
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public record UsuarioResponseDTO(
 
@@ -80,9 +80,12 @@ public record UsuarioResponseDTO(
         return null;
     }
 
-    public static List<ArtigoCeramicaResponseDTO> gerarListaDesejoDTO(List<ArtigoCeramica> list) {
+    public static List<ArtigoCeramicaResponseDTO> gerarListaDesejoDTO(List<Produto> list) {
         if (list != null)
-            return list.stream().map(ArtigoCeramicaResponseDTO::new).collect(Collectors.toList());
+            return list.stream()
+                    .map(produto -> (ArtigoCeramica) produto)
+                    .map(ArtigoCeramicaResponseDTO::new)
+                    .collect(Collectors.toList());
         return null;
     }
 

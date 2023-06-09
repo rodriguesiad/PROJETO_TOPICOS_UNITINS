@@ -1,11 +1,15 @@
 package br.unitins.projeto.resource;
 
 import br.unitins.projeto.application.Result;
+import br.unitins.projeto.dto.boleto.BoletoDTO;
+import br.unitins.projeto.dto.boleto.BoletoResponseDTO;
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
+import br.unitins.projeto.dto.pix.PixDTO;
+import br.unitins.projeto.dto.pix.PixResponseDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.service.compra.CompraService;
 import br.unitins.projeto.service.usuario.UsuarioService;
@@ -131,6 +135,75 @@ public class CompraResource {
             return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao incluir um historico.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @PATCH
+    @RolesAllowed({"Admin", "User"})
+    @Path("/{idCompra}/metodo-pagamento/boleto")
+    public Response pagarBoleto(@PathParam("idCompra") Long id, @Valid BoletoDTO dto) {
+        LOG.info("Fazendo pagemento por boleto");
+        Result result = null;
+
+        try {
+            BoletoResponseDTO response = service.pagarPorBoleto(id, dto);
+            LOG.infof("Pagamento realizado com sucesso.");
+            return Response.status(Status.CREATED).entity(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao fazer pagamento por boleto.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @PATCH
+    @RolesAllowed({"Admin", "User"})
+    @Path("/{idCompra}/metodo-pagamento/pix")
+    public Response pagarPix(@PathParam("idCompra") Long id, @Valid PixDTO dto) {
+        LOG.info("Fazendo pagemento por PIX");
+        Result result = null;
+
+        try {
+            PixResponseDTO response = service.pagarPorPix(id, dto);
+            LOG.infof("Pagamento realizado com sucesso.");
+            return Response.status(Status.CREATED).entity(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao fazer pagamento por pix.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @RolesAllowed({"Admin", "User"})
+    @Path("/{idCompra}/metodo-pagamento")
+    public Response getMetodoDePagamento(@PathParam("idCompra") Long id) {
+        LOG.info("Consultando método de pagamento");
+        Result result = null;
+
+        try {
+            Response response = service.getMetodoPagamento(id);
+            LOG.infof("Busca de método de pagamento realizada com sucesso.");
+            return response;
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao fazer consulta.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

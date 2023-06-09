@@ -1,7 +1,5 @@
 package br.unitins.projeto.service.usuario;
 
-import java.util.List;
-
 import br.unitins.projeto.dto.cartao.CartaoDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
@@ -11,13 +9,16 @@ import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
-import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.ListaDesejoDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.UsuarioListaDesejoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
 import br.unitins.projeto.model.Usuario;
 import jakarta.validation.Valid;
+
+import java.util.List;
 
 public interface UsuarioService {
 
@@ -64,6 +65,12 @@ public interface UsuarioService {
     UsuarioTelefoneResponseDTO updateTelefone(Long id, @Valid UsuarioTelefoneDTO dto);
 
     UsuarioResponseDTO update(Long id, String nomeImagem);
+
+    UsuarioListaDesejoResponseDTO getListaDesejo(Long id);
+
+    UsuarioListaDesejoResponseDTO insertProdutoListaDesejo(Long id, @Valid ListaDesejoDTO dto);
+
+    void deleteItemListaDesejo(Long id, Long idProduto);
 
 
 }

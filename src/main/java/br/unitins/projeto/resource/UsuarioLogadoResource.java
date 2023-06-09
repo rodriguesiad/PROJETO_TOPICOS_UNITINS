@@ -11,6 +11,8 @@ import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisResponseDTO;
 import br.unitins.projeto.dto.usuario.enderecos.UsuarioEnderecoResponseDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.ListaDesejoDTO;
+import br.unitins.projeto.dto.usuario.lista_desejo.UsuarioListaDesejoResponseDTO;
 import br.unitins.projeto.dto.usuario.senha.SenhaDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneDTO;
 import br.unitins.projeto.dto.usuario.telefone.UsuarioTelefoneResponseDTO;
@@ -75,7 +77,7 @@ public class UsuarioLogadoResource {
     }
 
     @GET
-    @Path("/dadosPessoais")
+    @Path("/dados-pessoais")
     @RolesAllowed({"Admin", "User"})
     public Response getDadosPessoais() {
         LOG.info("Buscando dados pessoais do usuario");
@@ -98,7 +100,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/dadosPessoais")
+    @Path("/dados-pessoais")
     @RolesAllowed({"Admin", "User"})
     public Response setDadosPessoais(@Valid DadosPessoaisDTO dto) {
         LOG.infof("Alterando dados pessoais");
@@ -121,7 +123,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/alterarSenha")
+    @Path("/alterar-senha")
     @RolesAllowed({"Admin", "User"})
     public Response alterarSenha(@Valid SenhaDTO dto) {
         LOG.info("Atualizando senha");
@@ -155,7 +157,7 @@ public class UsuarioLogadoResource {
             LOG.infof("Pesquisa realizada com sucesso.");
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
-            LOG.error("Erro ao pesquisa endereços.");
+            LOG.error("Erro ao pesquisar endereços.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {
@@ -213,7 +215,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/cadastro-endereco")
+    @Path("/enderecos")
     @RolesAllowed({"Admin", "User"})
     public Response insertEnderecos(@Valid EnderecoDTO dto) {
         LOG.infof("Inserindo um endereço");
@@ -305,7 +307,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/cadastro-cartao")
+    @Path("/cartoes")
     @RolesAllowed({"Admin", "User"})
     public Response insertCartao(@Valid CartaoDTO dto) {
         LOG.infof("Inserindo um cartao: %s", dto.numeroCartao());
@@ -375,7 +377,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/novaimagem")
+    @Path("/nova-imagem")
     @RolesAllowed({"Admin", "User"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response salvarImagem(@MultipartForm ImageForm form) {
@@ -417,6 +419,75 @@ public class UsuarioLogadoResource {
             return Response.ok(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao buscar compras.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @GET
+    @Path("/lista-desejo")
+    @RolesAllowed({"Admin", "User"})
+    public Response getListaDesejo() {
+        LOG.info("Buscando lista de desejo");
+        Result result = null;
+
+        try {
+            UsuarioListaDesejoResponseDTO response = service.getListaDesejo(this.getIdUsuario());
+            LOG.infof("Pesquisa realizada com sucesso.");
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao pesquisar lista desejo.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @DELETE
+    @Path("/lista-desejo/{idProduto}")
+    @RolesAllowed({"Admin", "User"})
+    public Response deleteProdutoListaDesejo(@PathParam("idProduto") Long idProduto) {
+        LOG.infof("Deletando um produto da lista de desejo");
+        Result result = null;
+
+        try {
+            service.deleteItemListaDesejo(this.getIdUsuario(), idProduto);
+            LOG.infof("Produto (%d) deletado da lista de desejo com sucesso.", idProduto);
+            return Response.status(Status.NO_CONTENT).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao deletar endereço.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @PATCH
+    @Path("/lista-desejo")
+    @RolesAllowed({"Admin", "User"})
+    public Response insertListaDesejo(@Valid ListaDesejoDTO dto) {
+        LOG.infof("Inserindo um produto na lista de desejo");
+        Result result = null;
+
+        try {
+            UsuarioListaDesejoResponseDTO response = service.insertProdutoListaDesejo(this.getIdUsuario(), dto);
+            LOG.infof("Produto (%d) inserido com sucesso.");
+            return Response.ok(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao inserir produto.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

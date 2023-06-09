@@ -41,7 +41,7 @@ public class Usuario extends DefaultEntity {
 
     @ManyToMany
     @JoinTable(name = "lista_desejo", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_produto"))
-    private List<ArtigoCeramica> listaDesejo;
+    private List<Produto> listaDesejo;
 
     public String getLogin() {
         return login;
@@ -107,11 +107,11 @@ public class Usuario extends DefaultEntity {
         this.listaCartao = listaCartao;
     }
 
-    public List<ArtigoCeramica> getListaDesejo() {
+    public List<Produto> getListaDesejo() {
         return listaDesejo;
     }
 
-    public void setListaDesejo(List<ArtigoCeramica> listaDesejo) {
+    public void setListaDesejo(List<Produto> listaDesejo) {
         this.listaDesejo = listaDesejo;
     }
 

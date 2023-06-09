@@ -64,7 +64,7 @@
       - descricao: String
     }
 
-    abstract class MetodoDePagamento{
+    class MetodoDePagamento{
     }
 
     class Pix extends MetodoDePagamento{
