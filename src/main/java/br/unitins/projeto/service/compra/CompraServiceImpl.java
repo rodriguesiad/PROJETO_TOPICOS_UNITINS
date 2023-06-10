@@ -265,30 +265,29 @@ public class CompraServiceImpl implements CompraService {
 
         Compra compra = getCompra(idCompra);
 
-        if (compra.getMetodoDePagamento() == null) {
-            throw new RuntimeException("Essa compra não possui método de pagamento");
+        if (compra.getMetodoDePagamento() != null) {
+
+            Boleto boleto = boletoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
+            Pix pix = pixRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
+            CartaoCredito cartaoCredito = cartaoCreditoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
+
+            if (boleto != null) {
+                BoletoResponseDTO boletoResponseDTO = new BoletoResponseDTO(boleto);
+                return Response.ok(boletoResponseDTO).build();
+            }
+
+            if (pix != null) {
+                PixResponseDTO pixResponseDTO = new PixResponseDTO(pix);
+                return Response.ok(pixResponseDTO).build();
+            }
+
+            if (cartaoCredito != null) {
+                CartaoCreditoResponseDTO cartaoCreditoResponseDTO = new CartaoCreditoResponseDTO(cartaoCredito);
+                return Response.ok(cartaoCreditoResponseDTO).build();
+            }
         }
 
-        Boleto boleto = boletoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
-        Pix pix = pixRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
-        CartaoCredito cartaoCredito = cartaoCreditoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
-
-        if (boleto != null) {
-            BoletoResponseDTO boletoResponseDTO = new BoletoResponseDTO(boleto);
-            return Response.ok(boletoResponseDTO).build();
-        }
-
-        if (pix != null) {
-            PixResponseDTO pixResponseDTO = new PixResponseDTO(pix);
-            return Response.ok(pixResponseDTO).build();
-        }
-
-        if (cartaoCredito != null) {
-            CartaoCreditoResponseDTO cartaoCreditoResponseDTO = new CartaoCreditoResponseDTO(cartaoCredito);
-            return Response.ok(cartaoCreditoResponseDTO).build();
-        }
-
-        return null;
+        return Response.ok(null).build();
     }
 
     private void validar(CompraDTO dto) throws ConstraintViolationException {

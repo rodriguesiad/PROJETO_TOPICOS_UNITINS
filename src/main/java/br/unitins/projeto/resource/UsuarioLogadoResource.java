@@ -43,7 +43,7 @@ import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
 import java.io.IOException;
 import java.util.List;
 
-@Path("/usuariologado")
+@Path("/usuario-logado")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class UsuarioLogadoResource {

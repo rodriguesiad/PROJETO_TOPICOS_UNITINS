@@ -1,28 +1,37 @@
 package br.unitins;
 
 import br.unitins.projeto.dto.auth_usuario.AuthUsuarioDTO;
-import br.unitins.projeto.service.usuario.UsuarioService;
+import br.unitins.projeto.dto.compra.CompraDTO;
+import br.unitins.projeto.dto.endereco_compra.EnderecoCompraDTO;
+import br.unitins.projeto.dto.item_compra.ItemCompraDTO;
+import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import io.restassured.response.Response;
-import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.unregisterParser;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 
 @QuarkusTest
-public class UsuarioResourceTest {
+public class CompraResourceTest {
 
     private String token = "";
     private Header header = null;
 
-    @Inject
-    UsuarioService service;
-
     @BeforeEach
+    @Transactional
     public void configurarTokenDeAutenticacao() {
+
         AuthUsuarioDTO authDTO = new AuthUsuarioDTO("maria", "123");
 
         Response response = given()
@@ -34,27 +43,17 @@ public class UsuarioResourceTest {
         token = response.then().extract().header("Authorization").toString();
 
         header = new Header("Authorization", "Bearer " + token);
+
     }
 
     @Test
-    public void getAllTest() {
-        given().when().get("/usuarios").then().statusCode(200);
+    public void getHistoricoEntrega() {
+        given().header(header).when().get("/compras/" + 1 +"/historico-entrega" ).then().statusCode(200);
     }
-//
-//    @Test
-//    public void testInsert() {
-//        TelefoneDTO telefoneDTO = new TelefoneDTO("63", "999999999");
-//
-//        UsuarioDTO dto = new UsuarioDTO( "mari", "123", "Maria da Paz",
-//                "ma@gmail.com", "71594987041", null, telefoneDTO, telefoneDTO);
-//
-//
-//        given()
-//                .header("Content-Type", "application/json")
-//                .contentType(ContentType.JSON)
-//                .accept(ContentType.JSON)
-//                .body(dto)
-//                .when()
-//                .post("/usuarios").then().body("id",  is("Maria da Paz"));
-//    }
+
+    @Test
+    public void getPagamento() {
+        given().header(header).when().get("/compras/" + 1 +"/pagamento" ).then().statusCode(200);
+    }
+
 }

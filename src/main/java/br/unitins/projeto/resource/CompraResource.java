@@ -88,7 +88,7 @@ public class CompraResource {
         try {
             CompraResponseDTO response = service.alterStatusCompra(id, dto);
             LOG.infof("Status alterado com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao alterar o status de uma compra.");
             LOG.debug(e.getMessage());
@@ -111,7 +111,7 @@ public class CompraResource {
         try {
             List<HistoricoEntregaResponseDTO> response = service.getHistoricoEntrega(id);
             LOG.infof("Históricos buscados com sucesso.");
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao buscar histórico.");
             LOG.debug(e.getMessage());
@@ -134,7 +134,7 @@ public class CompraResource {
         try {
             HistoricoEntregaResponseDTO response = service.insertHistoricoEntrega(id, dto);
             LOG.infof("Histórico inserido com sucesso.", response.id());
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao incluir um historico.");
             LOG.debug(e.getMessage());
@@ -157,7 +157,7 @@ public class CompraResource {
         try {
             BoletoResponseDTO response = service.pagarPorBoleto(id, dto);
             LOG.infof("Pagamento realizado com sucesso.");
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao fazer pagamento por boleto.");
             LOG.debug(e.getMessage());
@@ -180,7 +180,7 @@ public class CompraResource {
         try {
             PixResponseDTO response = service.pagarPorPix(id, dto);
             LOG.infof("Pagamento realizado com sucesso.");
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao fazer pagamento por pix.");
             LOG.debug(e.getMessage());
@@ -203,7 +203,7 @@ public class CompraResource {
         try {
             CartaoCreditoResponseDTO response = service.pagarPorCartao(id, dto);
             LOG.infof("Pagamento realizado com sucesso.");
-            return Response.status(Status.CREATED).entity(response).build();
+            return Response.ok().entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao fazer pagamento por cartão de crédito.");
             LOG.debug(e.getMessage());

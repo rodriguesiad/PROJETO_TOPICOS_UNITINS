@@ -28,7 +28,6 @@ INSERT INTO public.produto(estoque, preco, dataalteracao, datainclusao, id, nome
 INSERT INTO public.artigoceramica(quantidadepecas, id, id_artesao) VALUES (1, 1, 1);
 INSERT INTO public.artigo_tipo(id_artigo, id_tipo) VALUES (1, 1);
 
-
 INSERT INTO public.endereco(
     principal, cep, dataalteracao, datainclusao, id, id_municipio, id_usuario, titulo, bairro, logradouro, numero, complemento)
 VALUES (true, '77060182', '2023-04-15', '2023-04-15', 1, 1, 1, 'Casa', 'Aureny II', 'Goias', '15', null);
