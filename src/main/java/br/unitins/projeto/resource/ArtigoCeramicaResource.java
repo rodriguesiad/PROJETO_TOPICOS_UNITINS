@@ -150,7 +150,7 @@ public class ArtigoCeramicaResource {
     }
 
     @PATCH
-    @Path("/{id}/novaimagem")
+    @Path("/{id}/imagem")
     @RolesAllowed({"Admin"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response salvarImagem(@MultipartForm ImageForm form, @PathParam("id") Long id) {

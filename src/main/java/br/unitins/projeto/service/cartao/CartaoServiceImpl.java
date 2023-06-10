@@ -76,7 +76,7 @@ public class CartaoServiceImpl implements CartaoService {
         Cartao entity = repository.findById(id);
         entity.setNumeroCartao(cartaoDTO.numeroCartao());
         entity.setNomeTitular(cartaoDTO.nomeTitular());
-        entity.setHash(cartaoDTO.cvc() + cartaoDTO.dataVencimento());
+        entity.setHash(hashService.getHashSenha(cartaoDTO.cvc() + cartaoDTO.dataVencimento()));
 
         return new CartaoResponseDTO(entity);
     }

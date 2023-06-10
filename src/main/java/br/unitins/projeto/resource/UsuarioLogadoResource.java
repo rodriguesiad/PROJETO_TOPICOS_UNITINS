@@ -379,7 +379,7 @@ public class UsuarioLogadoResource {
     }
 
     @PATCH
-    @Path("/nova-imagem")
+    @Path("/imagem")
     @RolesAllowed({"Admin", "User"})
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response salvarImagem(@MultipartForm ImageForm form) {
