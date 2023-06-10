@@ -32,7 +32,7 @@ import org.jboss.logging.Logger;
 
 import java.util.List;
 
-@Path("/compra")
+@Path("/compras")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class CompraResource {
@@ -147,7 +147,7 @@ public class CompraResource {
 
     @PATCH
     @RolesAllowed({"Admin", "User"})
-    @Path("/{idCompra}/metodo-pagamento/boleto")
+    @Path("/{idCompra}/pagamento/boleto")
     public Response pagarBoleto(@PathParam("idCompra") Long id, @Valid BoletoDTO dto) {
         LOG.info("Fazendo pagemento por boleto");
         Result result = null;
@@ -170,7 +170,7 @@ public class CompraResource {
 
     @PATCH
     @RolesAllowed({"Admin", "User"})
-    @Path("/{idCompra}/metodo-pagamento/pix")
+    @Path("/{idCompra}/pagamento/pix")
     public Response pagarPix(@PathParam("idCompra") Long id, @Valid PixDTO dto) {
         LOG.info("Fazendo pagemento por PIX");
         Result result = null;
@@ -193,7 +193,7 @@ public class CompraResource {
 
     @GET
     @RolesAllowed({"Admin", "User"})
-    @Path("/{idCompra}/metodo-pagamento")
+    @Path("/{idCompra}/pagamento")
     public Response getMetodoDePagamento(@PathParam("idCompra") Long id) {
         LOG.info("Consultando método de pagamento");
         Result result = null;
