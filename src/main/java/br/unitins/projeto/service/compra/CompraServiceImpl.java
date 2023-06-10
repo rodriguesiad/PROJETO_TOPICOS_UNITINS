@@ -94,7 +94,6 @@ public class CompraServiceImpl implements CompraService {
 
         Compra entity = new Compra();
 
-        entity.setData(LocalDateTime.now());
         entity.setUsuario(this.getUsuario(idUsuario));
         entity.setStatusCompra(StatusCompra.PROCESSANDO);
         entity.setEnderecoCompra(enderecoCompraService.toModel(dto.enderecoCompra()));
@@ -135,7 +134,7 @@ public class CompraServiceImpl implements CompraService {
             if (statusCompra.equals(StatusCompra.FINALIZADA) && !compra.getStatusCompra().equals(StatusCompra.ENVIADA)) {
                 throw new RuntimeException("Uma compra não pode ser finalizada sem passar pelo estágio de entrega");
             }
-            
+
             try {
                 compra.setStatusCompra(StatusCompra.valueOf(dto.statusCompra()));
             } catch (Exception e) {
@@ -204,6 +203,7 @@ public class CompraServiceImpl implements CompraService {
         boletoRepository.persist(boleto);
         compra.setMetodoDePagamento(boleto);
         compra.setStatusCompra(StatusCompra.PAGA);
+        compra.setDataPagamento(LocalDateTime.now());
 
         return new BoletoResponseDTO(boleto);
     }
@@ -226,6 +226,7 @@ public class CompraServiceImpl implements CompraService {
         pixRepository.persist(pix);
         compra.setMetodoDePagamento(pix);
         compra.setStatusCompra(StatusCompra.PAGA);
+        compra.setDataPagamento(LocalDateTime.now());
 
         return new PixResponseDTO(pix);
     }
@@ -254,6 +255,7 @@ public class CompraServiceImpl implements CompraService {
         cartaoCreditoRepository.persist(cartaoCredito);
         compra.setMetodoDePagamento(cartaoCredito);
         compra.setStatusCompra(StatusCompra.PAGA);
+        compra.setDataPagamento(LocalDateTime.now());
 
         return new CartaoCreditoResponseDTO(cartaoCredito);
     }

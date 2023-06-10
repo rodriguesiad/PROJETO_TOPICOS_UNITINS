@@ -124,7 +124,7 @@ public class CartaoServiceImpl implements CartaoService {
     }
 
     @Override
-    public Cartao toModel(CartaoUpdateDTO cartaoDTO) {
+    public Cartao toUpdateModel(@Valid CartaoUpdateDTO cartaoDTO) {
         Cartao entity = new Cartao();
 
         entity.setId(cartaoDTO.id());

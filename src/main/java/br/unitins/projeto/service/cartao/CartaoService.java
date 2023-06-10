@@ -29,6 +29,6 @@ public interface CartaoService {
 
     Cartao toModel(@Valid CartaoDTO cartaoDTO);
 
-    Cartao toModel(@Valid CartaoUpdateDTO cartaoDTO);
+    Cartao toUpdateModel(@Valid CartaoUpdateDTO cartaoDTO);
 
 }

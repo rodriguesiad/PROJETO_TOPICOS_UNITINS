@@ -18,7 +18,7 @@ public class Compra extends DefaultEntity {
 
     @Column(name = "dataPagamento", columnDefinition = "TIMESTAMP", nullable = true)
     @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
-    private LocalDateTime data;
+    private LocalDateTime dataPagamento;
 
     @Column(name = "total_compra", nullable = false)
     private Double totalCompra = 0.0;
@@ -44,12 +44,12 @@ public class Compra extends DefaultEntity {
     @JoinColumn(name = "id_metodo_pagamento", unique = true)
     private MetodoDePagamento metodoDePagamento;
 
-    public LocalDateTime getData() {
-        return data;
+    public LocalDateTime getDataPagamento() {
+        return dataPagamento;
     }
 
-    public void setData(LocalDateTime data) {
-        this.data = data;
+    public void setDataPagamento(LocalDateTime data) {
+        this.dataPagamento = data;
     }
 
     public Double getTotalCompra() {

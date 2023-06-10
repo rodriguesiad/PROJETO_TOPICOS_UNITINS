@@ -310,7 +310,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (index == -1)
             throw new NotFoundException("Cartão não encontrado");
 
-        Cartao cartaoModel = cartaoService.toModel(dto);
+        Cartao cartaoModel = cartaoService.toUpdateModel(dto);
         cartaoService.update(dto.id(), dto);
         usuario.getListaCartao().set(index, cartaoModel);
 

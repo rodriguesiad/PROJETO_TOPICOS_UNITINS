@@ -30,7 +30,7 @@ public record CompraResponseDTO(
 
     public static CompraResponseDTO valueOf(Compra entity) {
         return new CompraResponseDTO(entity.getId(),
-                entity.getData(),
+                entity.getDataPagamento(),
                 entity.getTotalCompra(),
                 new EnderecoCompraResponseDTO(entity.getEnderecoCompra()),
                 entity.getStatusCompra(),
