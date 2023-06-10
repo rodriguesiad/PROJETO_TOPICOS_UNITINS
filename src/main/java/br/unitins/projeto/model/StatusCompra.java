@@ -7,7 +7,8 @@ public enum StatusCompra {
     PROCESSANDO(1, "Processando"),
     PAGA(2, "Paga"),
     CANCELADA(3, "Cancelada"),
-    FINALIZADA(4, "Finalizada");
+    ENVIADA(4, "Enviada"),
+    FINALIZADA(5, "Finalizada");
 
     private int id;
     private String label;

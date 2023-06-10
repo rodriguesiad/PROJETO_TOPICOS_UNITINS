@@ -15,7 +15,7 @@ public record CompraResponseDTO(
 
         Long id,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy 00:00:00")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         LocalDateTime data,
 
         Double totalCompra,

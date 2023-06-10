@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 public record BoletoResponseDTO(
 
+        Long id,
         String numeroBoleto,
 
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy 00:00:00")
@@ -14,7 +15,7 @@ public record BoletoResponseDTO(
 
 ) {
     public BoletoResponseDTO(Boleto entity) {
-        this(entity.getNumeroBoleto(), entity.getVencimento());
+        this(entity.getId(), entity.getNumeroBoleto(), entity.getVencimento());
     }
 
 }

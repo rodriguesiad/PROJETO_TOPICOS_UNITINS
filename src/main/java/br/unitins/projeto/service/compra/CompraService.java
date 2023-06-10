@@ -2,6 +2,8 @@ package br.unitins.projeto.service.compra;
 
 import br.unitins.projeto.dto.boleto.BoletoDTO;
 import br.unitins.projeto.dto.boleto.BoletoResponseDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoResponseDTO;
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
@@ -30,9 +32,11 @@ public interface CompraService {
 
     HistoricoEntregaResponseDTO insertHistoricoEntrega(Long idCompra, @Valid HistoricoEntregaDTO dto);
 
-    BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto) throws Exception;
+    BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto);
 
-    PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto) throws Exception;
+    PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto);
+
+    CartaoCreditoResponseDTO pagarPorCartao(Long idCompra, @Valid CartaoCreditoDTO dto);
 
     Response getMetodoPagamento(Long idCompra);
 

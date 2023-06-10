@@ -2,6 +2,8 @@ package br.unitins.projeto.service.compra;
 
 import br.unitins.projeto.dto.boleto.BoletoDTO;
 import br.unitins.projeto.dto.boleto.BoletoResponseDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoResponseDTO;
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
@@ -9,15 +11,10 @@ import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaDTO;
 import br.unitins.projeto.dto.historico_entrega.HistoricoEntregaResponseDTO;
 import br.unitins.projeto.dto.pix.PixDTO;
 import br.unitins.projeto.dto.pix.PixResponseDTO;
-import br.unitins.projeto.model.Boleto;
-import br.unitins.projeto.model.Compra;
-import br.unitins.projeto.model.HistoricoEntrega;
-import br.unitins.projeto.model.ItemCompra;
-import br.unitins.projeto.model.Pix;
-import br.unitins.projeto.model.StatusCompra;
-import br.unitins.projeto.model.TipoChavePix;
-import br.unitins.projeto.model.Usuario;
+import br.unitins.projeto.model.*;
 import br.unitins.projeto.repository.BoletoRepository;
+import br.unitins.projeto.repository.CartaoCreditoRepository;
+import br.unitins.projeto.repository.CartaoRepository;
 import br.unitins.projeto.repository.CompraRepository;
 import br.unitins.projeto.repository.HistoricoEntregaRepository;
 import br.unitins.projeto.repository.PixRepository;
@@ -64,6 +61,12 @@ public class CompraServiceImpl implements CompraService {
 
     @Inject
     PixRepository pixRepository;
+
+    @Inject
+    CartaoCreditoRepository cartaoCreditoRepository;
+
+    @Inject
+    CartaoRepository cartaoRepository;
 
     @Inject
     Validator validator;
@@ -121,12 +124,25 @@ public class CompraServiceImpl implements CompraService {
     public CompraResponseDTO alterStatusCompra(Long idCompra, StatusCompraDTO dto) {
         Compra compra = this.getCompra(idCompra);
 
-        try {
-            if (!StatusCompra.valueOf(dto.statusCompra()).equals(StatusCompra.CANCELADA)) {
-                compra.setStatusCompra(StatusCompra.valueOf(dto.statusCompra()));
+        if (!StatusCompra.CANCELADA.equals(compra.getStatusCompra())) {
+
+            StatusCompra statusCompra = StatusCompra.valueOf(dto.statusCompra());
+
+            if (statusCompra.getId() < compra.getStatusCompra().getId()) {
+                throw new RuntimeException("A compra não pode regredir em níveis de status.");
             }
-        } catch (Exception e) {
-            throw new NotFoundException("Status não encontrado.");
+
+            if (statusCompra.equals(StatusCompra.FINALIZADA) && !compra.getStatusCompra().equals(StatusCompra.ENVIADA)) {
+                throw new RuntimeException("Uma compra não pode ser finalizada sem passar pelo estágio de entrega");
+            }
+            
+            try {
+                compra.setStatusCompra(StatusCompra.valueOf(dto.statusCompra()));
+            } catch (Exception e) {
+                throw new NotFoundException("Status não encontrado.");
+            }
+        } else {
+            throw new RuntimeException("A compra em questão já foi cancelada ou finalizada.");
         }
 
         return CompraResponseDTO.valueOf(compra);
@@ -149,6 +165,10 @@ public class CompraServiceImpl implements CompraService {
     public HistoricoEntregaResponseDTO insertHistoricoEntrega(Long idCompra, @Valid HistoricoEntregaDTO dto) {
         Compra compra = this.getCompra(idCompra);
 
+        if (!compra.getStatusCompra().equals(StatusCompra.PAGA)) {
+            throw new RuntimeException("Não é permitido realizar a entrega de uma compra não paga.");
+        }
+
         HistoricoEntrega historicoEntrega = new HistoricoEntrega();
         historicoEntrega.setTitulo(dto.titulo());
         historicoEntrega.setDescricao(dto.descricao());
@@ -157,8 +177,10 @@ public class CompraServiceImpl implements CompraService {
 
         historicoEntregaRepository.persist(historicoEntrega);
 
-        if (compra.getHistoricoEntrega().isEmpty())
+        if (compra.getHistoricoEntrega().isEmpty()) {
             compra.setHistoricoEntrega(new ArrayList<>());
+            compra.setStatusCompra(StatusCompra.ENVIADA);
+        }
 
         compra.getHistoricoEntrega().add(historicoEntrega);
 
@@ -167,11 +189,11 @@ public class CompraServiceImpl implements CompraService {
 
     @Override
     @Transactional
-    public BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto) throws Exception {
+    public BoletoResponseDTO pagarPorBoleto(Long idCompra, @Valid BoletoDTO dto) {
         Compra compra = getCompra(idCompra);
 
         if (compra.getMetodoDePagamento() != null) {
-            throw new Exception("A compra já possuiu método de pagamento.");
+            throw new RuntimeException("A compra já possuiu método de pagamento.");
         }
 
         Boleto boleto = new Boleto();
@@ -181,17 +203,18 @@ public class CompraServiceImpl implements CompraService {
 
         boletoRepository.persist(boleto);
         compra.setMetodoDePagamento(boleto);
+        compra.setStatusCompra(StatusCompra.PAGA);
 
         return new BoletoResponseDTO(boleto);
     }
 
     @Override
     @Transactional
-    public PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto) throws Exception {
+    public PixResponseDTO pagarPorPix(Long idCompra, @Valid PixDTO dto) {
         Compra compra = getCompra(idCompra);
 
         if (compra.getMetodoDePagamento() != null) {
-            throw new Exception("A compra já possui método de pagamento.");
+            throw new RuntimeException("A compra já possui método de pagamento.");
         }
 
         TipoChavePix tipoChavePix = TipoChavePix.valueOf(dto.tipoChavePix());
@@ -202,8 +225,37 @@ public class CompraServiceImpl implements CompraService {
 
         pixRepository.persist(pix);
         compra.setMetodoDePagamento(pix);
+        compra.setStatusCompra(StatusCompra.PAGA);
 
         return new PixResponseDTO(pix);
+    }
+
+    @Override
+    @Transactional
+    public CartaoCreditoResponseDTO pagarPorCartao(Long idCompra, @Valid CartaoCreditoDTO dto) {
+        Compra compra = getCompra(idCompra);
+
+        Cartao cartao = cartaoRepository.findById(dto.idCartao());
+
+        if (cartao == null) {
+            throw new NotFoundException("Cartão não encontrado");
+        }
+
+        if (compra.getMetodoDePagamento() != null) {
+            throw new RuntimeException("A compra já possui método de pagamento.");
+        }
+
+        CartaoCredito cartaoCredito = new CartaoCredito();
+        cartaoCredito.setCartao(cartao);
+        cartaoCredito.setQuantidadeParcelas(dto.quantidadeParcelas());
+        cartaoCredito.setValorParcelas((compra.getTotalCompra() / dto.quantidadeParcelas()));
+        cartaoCredito.setCompra(compra);
+
+        cartaoCreditoRepository.persist(cartaoCredito);
+        compra.setMetodoDePagamento(cartaoCredito);
+        compra.setStatusCompra(StatusCompra.PAGA);
+
+        return new CartaoCreditoResponseDTO(cartaoCredito);
     }
 
     @Override
@@ -212,11 +264,12 @@ public class CompraServiceImpl implements CompraService {
         Compra compra = getCompra(idCompra);
 
         if (compra.getMetodoDePagamento() == null) {
-            throw new NotFoundException("Essa compra não possui método de pagamento");
+            throw new RuntimeException("Essa compra não possui método de pagamento");
         }
 
-        Boleto boleto = boletoRepository.findByIdAndCompra(compra.getId(), compra.getMetodoDePagamento().getId());
-        Pix pix = pixRepository.findByIdAndCompra(compra.getId(), compra.getMetodoDePagamento().getId());
+        Boleto boleto = boletoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
+        Pix pix = pixRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
+        CartaoCredito cartaoCredito = cartaoCreditoRepository.findByIdAndCompra(compra.getMetodoDePagamento().getId(), compra.getId());
 
         if (boleto != null) {
             BoletoResponseDTO boletoResponseDTO = new BoletoResponseDTO(boleto);
@@ -226,6 +279,11 @@ public class CompraServiceImpl implements CompraService {
         if (pix != null) {
             PixResponseDTO pixResponseDTO = new PixResponseDTO(pix);
             return Response.ok(pixResponseDTO).build();
+        }
+
+        if (cartaoCredito != null) {
+            CartaoCreditoResponseDTO cartaoCreditoResponseDTO = new CartaoCreditoResponseDTO(cartaoCredito);
+            return Response.ok(cartaoCreditoResponseDTO).build();
         }
 
         return null;

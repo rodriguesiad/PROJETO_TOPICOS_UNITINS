@@ -17,7 +17,7 @@ import java.util.List;
 public class Compra extends DefaultEntity {
 
     @Column(name = "dataPagamento", columnDefinition = "TIMESTAMP", nullable = true)
-    @JsonFormat(pattern = "yyyy-MM-dd 00:00:00.00", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDateTime data;
 
     @Column(name = "total_compra", nullable = false)

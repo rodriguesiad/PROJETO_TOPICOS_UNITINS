@@ -18,7 +18,7 @@ public class HistoricoEntrega extends DefaultEntity {
     private String descricao;
 
     @Column(name = "data", columnDefinition = "TIMESTAMP")
-    @JsonFormat(pattern = "yyyy-MM-dd 00:00:00.00", shape = JsonFormat.Shape.STRING)
+    @JsonFormat(pattern = "yyyy-MM-dd", shape = JsonFormat.Shape.STRING)
     private LocalDateTime data;
 
     @ManyToOne

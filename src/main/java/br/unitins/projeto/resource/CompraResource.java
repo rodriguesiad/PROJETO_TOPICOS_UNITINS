@@ -3,6 +3,8 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.boleto.BoletoDTO;
 import br.unitins.projeto.dto.boleto.BoletoResponseDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoDTO;
+import br.unitins.projeto.dto.cartao_credito.CartaoCreditoResponseDTO;
 import br.unitins.projeto.dto.compra.CompraDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.compra.StatusCompraDTO;
@@ -149,7 +151,7 @@ public class CompraResource {
     @RolesAllowed({"Admin", "User"})
     @Path("/{idCompra}/pagamento/boleto")
     public Response pagarBoleto(@PathParam("idCompra") Long id, @Valid BoletoDTO dto) {
-        LOG.info("Fazendo pagemento por boleto");
+        LOG.info("Realizando pagamento por boleto");
         Result result = null;
 
         try {
@@ -172,7 +174,7 @@ public class CompraResource {
     @RolesAllowed({"Admin", "User"})
     @Path("/{idCompra}/pagamento/pix")
     public Response pagarPix(@PathParam("idCompra") Long id, @Valid PixDTO dto) {
-        LOG.info("Fazendo pagemento por PIX");
+        LOG.info("Realizando pagamento por PIX");
         Result result = null;
 
         try {
@@ -181,6 +183,29 @@ public class CompraResource {
             return Response.status(Status.CREATED).entity(response).build();
         } catch (ConstraintViolationException e) {
             LOG.error("Erro ao fazer pagamento por pix.");
+            LOG.debug(e.getMessage());
+            result = new Result(e.getConstraintViolations());
+        } catch (Exception e) {
+            LOG.fatal("Erro sem identificacao: " + e.getMessage());
+            result = new Result(e.getMessage(), false);
+        }
+
+        return Response.status(Status.NOT_FOUND).entity(result).build();
+    }
+
+    @PATCH
+    @RolesAllowed({"Admin", "User"})
+    @Path("/{idCompra}/pagamento/cartao-credito")
+    public Response pagarCartaoCredito(@PathParam("idCompra") Long id, @Valid CartaoCreditoDTO dto) {
+        LOG.info("Realizando pagamento por Cartão de Crédito");
+        Result result = null;
+
+        try {
+            CartaoCreditoResponseDTO response = service.pagarPorCartao(id, dto);
+            LOG.infof("Pagamento realizado com sucesso.");
+            return Response.status(Status.CREATED).entity(response).build();
+        } catch (ConstraintViolationException e) {
+            LOG.error("Erro ao fazer pagamento por cartão de crédito.");
             LOG.debug(e.getMessage());
             result = new Result(e.getConstraintViolations());
         } catch (Exception e) {

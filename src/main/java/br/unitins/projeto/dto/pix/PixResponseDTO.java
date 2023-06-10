@@ -4,12 +4,15 @@ import br.unitins.projeto.model.Pix;
 import br.unitins.projeto.model.TipoChavePix;
 
 public record PixResponseDTO(
+
+        Long id,
         String chave,
         TipoChavePix tipoChavePix
+
 ) {
 
     public PixResponseDTO(Pix entity) {
-        this(entity.getChave(), entity.getTipoChavePix());
+        this( entity.getId(), entity.getChave(), entity.getTipoChavePix());
     }
 
 }

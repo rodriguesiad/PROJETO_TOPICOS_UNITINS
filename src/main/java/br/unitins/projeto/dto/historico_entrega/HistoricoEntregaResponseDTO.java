@@ -15,7 +15,7 @@ public record HistoricoEntregaResponseDTO(
         @JsonInclude(JsonInclude.Include.NON_NULL)
         String descricao,
 
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy 00:00:00")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         LocalDateTime data
 
 ) {

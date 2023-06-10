@@ -20,6 +20,7 @@
     enum StatusCompra{
         PROCESSANDO: int
         PAGA: int
+        ENVIADA: int
         CANCELADA: int
         FINALIZADA: int
     }
