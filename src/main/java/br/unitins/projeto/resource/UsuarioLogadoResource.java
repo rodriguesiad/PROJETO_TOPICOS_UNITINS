@@ -3,9 +3,11 @@ package br.unitins.projeto.resource;
 import br.unitins.projeto.application.Result;
 import br.unitins.projeto.dto.cartao.CartaoDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
+import br.unitins.projeto.dto.cartao.CartaoUpdateDTO;
 import br.unitins.projeto.dto.compra.CompraResponseDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
+import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
 import br.unitins.projeto.dto.usuario.dados_pessoais.DadosPessoaisDTO;
@@ -171,7 +173,7 @@ public class UsuarioLogadoResource {
     @PATCH
     @Path("/enderecos/{idEndereco}")
     @RolesAllowed({"Admin", "User"})
-    public Response updateEnderecos(@PathParam("idEndereco") Long idEndereco, @Valid EnderecoDTO dto) {
+    public Response updateEnderecos(@PathParam("idEndereco") Long idEndereco, @Valid EnderecoUpdateDTO dto) {
         LOG.info("Alterando endereços");
         Result result = null;
 
@@ -263,7 +265,7 @@ public class UsuarioLogadoResource {
     @PATCH
     @Path("/cartoes/{idCartao}")
     @RolesAllowed({"Admin", "User"})
-    public Response updateCartao(@PathParam("idCartao") Long idCartao, @Valid CartaoDTO dto) {
+    public Response updateCartao(@PathParam("idCartao") Long idCartao, @Valid CartaoUpdateDTO dto) {
         LOG.infof("Alterando cartao: %s", dto.numeroCartao());
         Result result = null;
 

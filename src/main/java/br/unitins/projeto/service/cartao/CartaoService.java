@@ -2,6 +2,7 @@ package br.unitins.projeto.service.cartao;
 
 import java.util.List;
 
+import br.unitins.projeto.dto.cartao.CartaoUpdateDTO;
 import jakarta.validation.Valid;
 
 import br.unitins.projeto.dto.cartao.CartaoDTO;
@@ -18,7 +19,7 @@ public interface CartaoService {
 
     CartaoResponseDTO create(Cartao product);
 
-    CartaoResponseDTO update(Long id, CartaoDTO productDTO);
+    CartaoResponseDTO update(Long id, CartaoUpdateDTO productDTO);
 
     void delete(Long id);
 
@@ -27,5 +28,7 @@ public interface CartaoService {
     Long count();
 
     Cartao toModel(@Valid CartaoDTO cartaoDTO);
+
+    Cartao toModel(@Valid CartaoUpdateDTO cartaoDTO);
 
 }

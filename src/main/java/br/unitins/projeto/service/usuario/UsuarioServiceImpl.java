@@ -2,8 +2,10 @@ package br.unitins.projeto.service.usuario;
 
 import br.unitins.projeto.dto.cartao.CartaoDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
+import br.unitins.projeto.dto.cartao.CartaoUpdateDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
+import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
@@ -226,7 +228,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoDTO dto) {
+    public UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoUpdateDTO dto) {
         Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaEndereco().isEmpty()) {
@@ -240,7 +242,7 @@ public class UsuarioServiceImpl implements UsuarioService {
         if (index == -1)
             throw new NotFoundException("Endereço não encontrado");
 
-        Endereco enderecoModel = enderecoService.toModel(dto);
+        Endereco enderecoModel = enderecoService.toUpdateModel(dto);
         enderecoService.update(dto.id(), dto);
         usuario.getListaEndereco().set(index, enderecoModel);
 
@@ -294,7 +296,7 @@ public class UsuarioServiceImpl implements UsuarioService {
 
     @Override
     @Transactional
-    public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoDTO dto) {
+    public UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoUpdateDTO dto) {
         Usuario usuario = this.getUsuario(id);
 
         if (usuario.getListaCartao().isEmpty()) {

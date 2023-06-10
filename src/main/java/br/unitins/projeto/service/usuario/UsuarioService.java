@@ -2,8 +2,10 @@ package br.unitins.projeto.service.usuario;
 
 import br.unitins.projeto.dto.cartao.CartaoDTO;
 import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
+import br.unitins.projeto.dto.cartao.CartaoUpdateDTO;
 import br.unitins.projeto.dto.endereco.EnderecoDTO;
 import br.unitins.projeto.dto.endereco.EnderecoResponseDTO;
+import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import br.unitins.projeto.dto.usuario.UsuarioDTO;
 import br.unitins.projeto.dto.usuario.UsuarioResponseDTO;
 import br.unitins.projeto.dto.usuario.cartoes.UsuarioCartaoResponseDTO;
@@ -48,7 +50,7 @@ public interface UsuarioService {
 
     EnderecoResponseDTO insertEndereco(Long id, @Valid EnderecoDTO dto);
 
-    UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoDTO dto);
+    UsuarioEnderecoResponseDTO updateEndereco(Long id, Long idEndereco, @Valid EnderecoUpdateDTO dto);
 
     void deleteEndereco(Long id, Long idEndereco);
 
@@ -56,7 +58,7 @@ public interface UsuarioService {
 
     CartaoResponseDTO insertCartao(Long id, @Valid CartaoDTO dto);
 
-    UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoDTO dto);
+    UsuarioCartaoResponseDTO updateCartao(Long id, Long idCartao, @Valid CartaoUpdateDTO dto);
 
     void deleteCartao(Long id, Long idCartao);
 

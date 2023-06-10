@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import br.unitins.projeto.dto.endereco.EnderecoUpdateDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -77,7 +78,7 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     @Override
     @Transactional
-    public EnderecoResponseDTO update(Long id, EnderecoDTO enderecoDTO) throws ConstraintViolationException {
+    public EnderecoResponseDTO update(Long id, @Valid EnderecoUpdateDTO enderecoDTO) throws ConstraintViolationException {
         validar(enderecoDTO);
 
         Endereco entity = repository.findById(id);
@@ -98,6 +99,22 @@ public class EnderecoServiceImpl implements EnderecoService {
     public Endereco toModel(@Valid EnderecoDTO enderecoDTO) {
         Endereco entity = new Endereco();
 
+        entity.setPrincipal(enderecoDTO.principal());
+        entity.setLogradouro(enderecoDTO.logradouro());
+        entity.setBairro(enderecoDTO.bairro());
+        entity.setNumero(enderecoDTO.numero());
+        entity.setComplemento(enderecoDTO.complemento());
+        entity.setCep(enderecoDTO.cep());
+        entity.setTitulo(enderecoDTO.titulo());
+        entity.setMunicipio(municipioRepository.findById(enderecoDTO.idMunicipio()));
+
+        return entity;
+    }
+
+    @Override
+    public Endereco toUpdateModel(EnderecoUpdateDTO enderecoDTO) {
+        Endereco entity = new Endereco();
+
         entity.setId(enderecoDTO.id());
         entity.setPrincipal(enderecoDTO.principal());
         entity.setLogradouro(enderecoDTO.logradouro());
@@ -113,6 +130,13 @@ public class EnderecoServiceImpl implements EnderecoService {
 
     private void validar(EnderecoDTO enderecoDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<EnderecoDTO>> violations = validator.validate(enderecoDTO);
+
+        if (!violations.isEmpty())
+            throw new ConstraintViolationException(violations);
+    }
+
+    private void validar(EnderecoUpdateDTO enderecoDTO) throws ConstraintViolationException {
+        Set<ConstraintViolation<EnderecoUpdateDTO>> violations = validator.validate(enderecoDTO);
 
         if (!violations.isEmpty())
             throw new ConstraintViolationException(violations);

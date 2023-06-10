@@ -1,9 +1,10 @@
 package br.unitins.projeto.service.cartao;
 
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import br.unitins.projeto.dto.cartao.CartaoDTO;
+import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
+import br.unitins.projeto.dto.cartao.CartaoUpdateDTO;
+import br.unitins.projeto.model.Cartao;
+import br.unitins.projeto.repository.CartaoRepository;
 import br.unitins.projeto.service.hash.HashService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,10 +15,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import jakarta.ws.rs.NotFoundException;
 
-import br.unitins.projeto.dto.cartao.CartaoDTO;
-import br.unitins.projeto.dto.cartao.CartaoResponseDTO;
-import br.unitins.projeto.model.Cartao;
-import br.unitins.projeto.repository.CartaoRepository;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class CartaoServiceImpl implements CartaoService {
@@ -70,7 +70,7 @@ public class CartaoServiceImpl implements CartaoService {
 
     @Override
     @Transactional
-    public CartaoResponseDTO update(Long id, CartaoDTO cartaoDTO) throws ConstraintViolationException {
+    public CartaoResponseDTO update(Long id, CartaoUpdateDTO cartaoDTO) throws ConstraintViolationException {
         validar(cartaoDTO);
 
         Cartao entity = repository.findById(id);
@@ -83,6 +83,13 @@ public class CartaoServiceImpl implements CartaoService {
 
     private void validar(CartaoDTO cartaoDTO) throws ConstraintViolationException {
         Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(cartaoDTO);
+
+        if (!violations.isEmpty())
+            throw new ConstraintViolationException(violations);
+    }
+
+    private void validar(CartaoUpdateDTO cartaoDTO) throws ConstraintViolationException {
+        Set<ConstraintViolation<CartaoUpdateDTO>> violations = validator.validate(cartaoDTO);
 
         if (!violations.isEmpty())
             throw new ConstraintViolationException(violations);
@@ -109,6 +116,18 @@ public class CartaoServiceImpl implements CartaoService {
     public Cartao toModel(@Valid CartaoDTO cartaoDTO) {
         Cartao entity = new Cartao();
 
+        entity.setNomeTitular(cartaoDTO.nomeTitular());
+        entity.setNumeroCartao(cartaoDTO.numeroCartao());
+        entity.setHash(hashService.getHashSenha(cartaoDTO.cvc() + cartaoDTO.dataVencimento()));
+
+        return entity;
+    }
+
+    @Override
+    public Cartao toModel(CartaoUpdateDTO cartaoDTO) {
+        Cartao entity = new Cartao();
+
+        entity.setId(cartaoDTO.id());
         entity.setNomeTitular(cartaoDTO.nomeTitular());
         entity.setNumeroCartao(cartaoDTO.numeroCartao());
         entity.setHash(hashService.getHashSenha(cartaoDTO.cvc() + cartaoDTO.dataVencimento()));

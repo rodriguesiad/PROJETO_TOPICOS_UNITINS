@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record EnderecoDTO(
+public record EnderecoUpdateDTO(
+
+                Long id,
 
                 @NotNull(message = "O campo principal deve ser informado") Boolean principal,
 

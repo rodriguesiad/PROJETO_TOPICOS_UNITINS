@@ -3,8 +3,9 @@ package br.unitins.projeto.dto.cartao;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CartaoDTO(
+public record CartaoUpdateDTO(
 
+        Long id,
         @NotBlank(message = "O número do cartão deve ser informado") @Size(max = 16, message = "O número do cartão só pode ter até 16 caracteres.") String numeroCartao,
 
         @NotBlank(message = "O nome do titular deve ser informado") @Size(max = 100, message = "O nome do titular só pode ter até 100 caracteres.") String nomeTitular,
